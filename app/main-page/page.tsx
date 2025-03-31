@@ -1,5 +1,5 @@
 import { MainPage } from "@/pages/main/";
 
-export default function AboutRoute() {
+export default function MainRoute() {
   return <MainPage />;
 }
