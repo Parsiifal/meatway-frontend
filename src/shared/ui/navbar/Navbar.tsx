@@ -203,11 +203,11 @@ export const NavbarShowcase = () => {
               </DropdownTrigger>
               <DropdownMenu aria-label="Link Actions" disabledKeys={["analytics", "settings", "help-feedback"]}>
                 <DropdownItem key="home" href="/">Home</DropdownItem>
-                <DropdownItem key="main" href="/main-page">Main</DropdownItem>
+                <DropdownItem key="main" href="/main">Main</DropdownItem>
                 <DropdownItem key="analytics" href="/">Analytics</DropdownItem>
                 <DropdownItem key="settings" href="/">Settings</DropdownItem>
                 <DropdownItem key="help-feedback" href="/">Help & Feedback</DropdownItem>
-                <DropdownItem key="about" href="/about-page">About us</DropdownItem>
+                <DropdownItem key="about" href="/about">About us</DropdownItem>
               </DropdownMenu>
             </Dropdown>
         </NavbarContent>
