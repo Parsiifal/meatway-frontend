@@ -4,11 +4,12 @@ import { LogoIcon, SearchIcon } from "@/shared/ui/icons";
 
 export const LeftNavbarSector = () => {
   return (
-    <NavbarContent justify="start">
+    <NavbarContent justify="start"> 
       {/* Левая часть: лого, название, поиск */}
       <NavbarItem className="flex gap-5">
+
         <NavbarBrand>
-          <LogoIcon />
+          <LogoIcon/>
           <p className="ml-2 text-xl font-bold text-inherit">MeatWay</p>
         </NavbarBrand>
 
@@ -21,10 +22,11 @@ export const LeftNavbarSector = () => {
           }}
           placeholder="Поиск по объявлениям"
           size="sm"
-          startContent={<SearchIcon size={20} stroke="#0ea5e9" strokeWidth={2} />}
+          startContent={<SearchIcon size={20} stroke="#0ea5e9" strokeWidth={2}/>}
           type="search"
         />
-      </NavbarItem>
+
+      </NavbarItem>  
     </NavbarContent>
   );
 };

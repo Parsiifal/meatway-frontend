@@ -11,16 +11,17 @@ export const RightNavbarSector = () => {
   return (
     <NavbarContent justify="end">
       {/* Правая часть: вход, меню */}
+
       <NavbarItem className="hidden lg:flex">
         <Link href="#">Login</Link>
       </NavbarItem>
-      <NavbarItem>
+      <NavbarItem> 
         <Button as={Link} color="success" href="#" variant="flat">Sign Up</Button>
       </NavbarItem>
 
       <Dropdown>
-        <DropdownTrigger>
-          <Button isIconOnly variant="light"><MenuIcon size={28} /></Button>
+        <DropdownTrigger>  
+          <Button isIconOnly variant="light"><MenuIcon size={28}/></Button>  
         </DropdownTrigger>
         <DropdownMenu aria-label="Link Actions" disabledKeys={["analytics", "settings", "help-feedback"]}>
           <DropdownItem key="home" href="/">Home</DropdownItem>
@@ -31,6 +32,7 @@ export const RightNavbarSector = () => {
           <DropdownItem key="about" href="/about">About us</DropdownItem>
         </DropdownMenu>
       </Dropdown>
-    </NavbarContent>
+
+    </NavbarContent> 
   );
 };

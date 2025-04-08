@@ -10,7 +10,7 @@ export const CenrtalNavbarSector = () => {
 
       <NavbarItem>
         <Button disableRipple variant="light" className="flex flex-col items-center justify-center gap-y-0.5 h-12 py-1 hover:text-red-500 hover:!bg-transparent">
-          <HeartIcon size={25} />
+          <HeartIcon size={25}/>
           <span className="text-xs">Избранное</span>
         </Button>
       </NavbarItem>
