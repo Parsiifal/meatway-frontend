@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  // Отключаем встроенный форматтер js и ts
+  "javascript.format.enable": false,
+  "typescript.format.enable": false,
+  // Отключение предупреждений о неизвестных для CSS Tailwind директивах
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  // Отключение встроенного форматтера CSS
+  "css.format.enable": false
+}
