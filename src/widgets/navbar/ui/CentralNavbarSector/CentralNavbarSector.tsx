@@ -1,7 +1,8 @@
 import { NavbarContent, NavbarItem } from "@heroui/react";
 import { Button } from "@heroui/button";
-import { HeartIcon } from "@/shared/ui/icons";
-import Link from "next/link";
+import { HeartIcon, MessageIcon, ISaleIcon, LocationIcon, CaseIcon } from "@/shared/ui/icons";
+//import Link from "next/link";
+import "./CenrtalNavbarSector.css";
 
 export const CenrtalNavbarSector = () => {
   return (
@@ -9,24 +10,40 @@ export const CenrtalNavbarSector = () => {
       {/* Центральная часть: страницы */}
 
       <NavbarItem>
-        <Button disableRipple variant="light" className="flex flex-col items-center justify-center gap-y-0.5 h-12 py-1 hover:text-red-500 hover:!bg-transparent">
+        <Button disableRipple variant="light" className="btnBase hover:text-red-500">
           <HeartIcon size={25}/>
           <span className="text-xs">Избранное</span>
         </Button>
       </NavbarItem>
 
       <NavbarItem>
-        <Link color="foreground" href="#">Сообщения</Link>
+        <Button disableRipple variant="light" className="btnBase hover:text-sky-600">
+          <MessageIcon size={25}/>
+          <span className="text-xs">Сообщения</span>
+        </Button>
       </NavbarItem>
+
       <NavbarItem>
-        <Link color="foreground" href="#">Я продаю</Link>
+        <Button disableRipple variant="light" className="btnBase hover:text-green-600">
+          <ISaleIcon size={25}/>
+          <span className="text-xs">Я продаю</span>
+        </Button>
       </NavbarItem>
+
       <NavbarItem>
-        <Link color="foreground" href="#">На карте</Link>
+        <Button disableRipple variant="light" className="btnBase hover:text-orange-600">
+          <LocationIcon size={22}/>
+          <span className="text-xs">На карте</span>
+        </Button>
       </NavbarItem>
+
       <NavbarItem>
-        <Link color="foreground" href="#">Для бизнеса</Link>
+        <Button disableRipple variant="light" className="btnBase hover:text-indigo-600">
+          <CaseIcon size={22}/>
+          <span className="text-xs">Для бизнеса</span>
+        </Button>
       </NavbarItem>
+
     </NavbarContent>
   );
 };

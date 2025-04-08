@@ -1,0 +1,3 @@
+.btnBase {
+    @apply flex flex-col items-center justify-center gap-y-0.5 h-12 py-1 hover:!bg-transparent;
+}
