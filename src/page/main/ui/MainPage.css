@@ -1,0 +1,7 @@
+.gridLg {
+  @apply lg:grid lg:grid-cols-12 lg:gap-x-4
+}
+
+.btnMeatType {
+  @apply col-span-2 flex flex-row items-center justify-center h-full gap-x-1 bg-gray-400/30 border rounded-2xl border-red-400
+}
