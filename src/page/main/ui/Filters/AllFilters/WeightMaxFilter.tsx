@@ -1,13 +1,13 @@
 import { NumberInput } from "@heroui/react";
 import { useState, useRef } from "react";
 
-interface PriceMaxFilterProps {
+interface WeightMaxFilterProps {
   value: number | undefined;
   onChange: (value: number | undefined) => void;
   minValue: number | undefined;
 }
 
-export const PriceMaxFilter = ({ value, onChange, minValue }: PriceMaxFilterProps) => {
+export const WeightMaxFilter = ({ value, onChange, minValue }: WeightMaxFilterProps) => {
   
   const [touched, setTouched] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,7 +36,7 @@ export const PriceMaxFilter = ({ value, onChange, minValue }: PriceMaxFilterProp
   }
 
   return (
-    <div className="col-span-2 col-start-3 border border-green-600">
+    <div className="col-span-2 col-start-7 border border-green-600">
       <NumberInput ref={inputRef} isClearable hideStepper isWheelDisabled radius="lg" size={"sm"}
         errorMessage={
           errors.length > 0 ? (

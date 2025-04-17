@@ -29,11 +29,11 @@ export const PriceMinFilter = ({ value, onChange, maxValue }: PriceMinFilterProp
     if (value <= 0) {
       errors.push("Значение должно быть больше 0!");
     } else if (value > 100000) {
-      errors.push("Значение должно быть меньше 100000");
+      errors.push("Значение должно быть меньше 100000!");
     }
   }
   if (value !== undefined && maxValue !== undefined && value > maxValue) {
-    errors.push(`Максимум ${maxValue}`);
+    errors.push(`Максимум ${maxValue}!`);
   }
 
   return (
