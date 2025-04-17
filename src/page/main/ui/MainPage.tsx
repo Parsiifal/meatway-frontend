@@ -5,20 +5,20 @@ import { TopContent } from "./TopContent/TopContent";
 import { ButtonsMeatType } from "./ButtonsMeatType/ButtonsMeatType";
 import { Filters } from "./Filters/Filters";
 import { Advertisement } from "./Advertisements/Advertisement";
-import { AdvertisementType } from "@/entities/advertisement/types/AdvertisementType";
-import { BirdAdvertisementType } from "@/entities/advertisement/types/BirdAdvertisementType";
+import { AdvertisementUnion } from "@/entities/advertisement/types/AdvertisementType";
 import { AdvertisementApi } from "@/entities/advertisement/api/AdvertisementApi";
 import { useState, useEffect } from "react";
 
 interface MainPageProps {
-  initialAds: AdvertisementType[];
+  initialAds: AdvertisementUnion[];
   initialError?: string;
 }
 
 export const MainPage = ({ initialAds, initialError }: MainPageProps) => {
 
-  const [selectedType, setSelectedType] = useState<string>("all");
-  const [ads, setAds] = useState<AdvertisementType[]>(initialAds);
+  const [selectedType, setSelectedType] = useState<string>("all"); // выбор типа мяса пользователем
+  const [ads, setAds] = useState<AdvertisementUnion[]>(initialAds); // установка набора объявлений сервером
+
   const [error, setError] = useState<string | null>(initialError || null);
   const [loading, setLoading] = useState(false);
 
@@ -35,6 +35,7 @@ export const MainPage = ({ initialAds, initialError }: MainPageProps) => {
       setAds([]);
     } finally {
       setLoading(false);
+      console.log(selectedType);
     }
   };
 
@@ -63,7 +64,7 @@ export const MainPage = ({ initialAds, initialError }: MainPageProps) => {
       <div className="mt-6 bg-gray-200 min-h-[70vh] border border-orange-500">
         <div className="w-4/5 max-w-screen-lg mx-auto">
           {/* Объявления */}
-          <Advertisement advertisements={ads} error={error || undefined} selectedType={selectedType}/>
+          <Advertisement advertisements={ads} error={error || undefined}/>
         </div>
       </div>
 

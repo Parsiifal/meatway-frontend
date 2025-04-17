@@ -5,18 +5,17 @@ import Image from "next/image";
 import "../MainPage.css";
 
 import { Avatar } from "@heroui/react";
-import { AdvertisementType } from "@/entities/advertisement/types/AdvertisementType";
-import { BirdAdvertisementType } from "@/entities/advertisement/types/BirdAdvertisementType";
+import { AdvertisementUnion } from "@/entities/advertisement/types/AdvertisementType";
+
 
 import { CircularProgress } from "@heroui/react";
 
 interface AdvertisementProps {
-  advertisements: AdvertisementType[];
+  advertisements: AdvertisementUnion[];
   error?: string;
-  selectedType: string;
 }
 
-export const Advertisement = ({ advertisements, error, selectedType }: AdvertisementProps) => {
+export const Advertisement = ({ advertisements, error }: AdvertisementProps) => {
   
   const settings = {
     dots: true,
@@ -55,7 +54,7 @@ export const Advertisement = ({ advertisements, error, selectedType }: Advertise
     );
   }
 
-  // 3) Ещё нет объявлений (пустой массив)
+  // Если нет объявлений
   if (advertisements.length === 0) {
     return (
       <p className="mt-4 text-center text-gray-500">
@@ -74,7 +73,7 @@ export const Advertisement = ({ advertisements, error, selectedType }: Advertise
 
   return (
     <>
-      {advertisements.map((ad: AdvertisementType) => (
+      {advertisements.map((ad) => (
         <div key={ad.id} className="mt-4 bg-white rounded-2xl border border-cyan-500">
           
           <div className="gridLg">
@@ -99,7 +98,7 @@ export const Advertisement = ({ advertisements, error, selectedType }: Advertise
             </div>
 
             <div className="col-span-4 col-start-5 mt-4 border border-gray-500">
-              <p className="text-2xl border border-gray-500">{ad.title}</p>
+              <p className="text-xl border border-gray-500">{ad.title}</p>
               <p className="mt-1 border border-gray-500">{ad.breed}</p> {/* Порода */}
               <p className="mt-1 border border-gray-500">{ad.monthsAge} месяцев</p>
               <p className="mt-1 border border-gray-500">{ad.weight} кг</p>
@@ -119,25 +118,26 @@ export const Advertisement = ({ advertisements, error, selectedType }: Advertise
               </div>
 
               <div className="col-span-2 text-center mt-5 border border-red-500">
-                {selectedType === "bird" ? (<p className="bg-green-400 p-1 rounded-xl">Халяль</p>) : (<p></p>)}
-                
-                
-                <p className="bg-green-400 p-1 rounded-xl mt-1">Мраморное</p>
-                {ad.isFrozen ? (
-                  <p className="bg-blue-400 text-white p-1 rounded-xl mt-1">Заморожено</p>
-                ) : (
-                  <p className="bg-green-400 p-1 rounded-xl mt-1">Свежее</p>
-                )}
-               
+                {/* Отображение халяль с цветовой индикацией кроме свинины*/}
+                {"isHalal" in ad ? ad.isHalal ? (<p className="bg-green-400 p-1 rounded-xl">Халяль</p>) : 
+                  (<p className="bg-red-400 text-white p-1 rounded-xl">Халяль</p>) : <></>
+                }
+
+                {/* Мраморность для говядины */}
+                {"isMramor" in ad ? ad.isMramor ? (<p className="bg-green-400 p-1 rounded-xl mt-1">Мраморное</p>) :
+                  (<p className="bg-red-400 text-white p-1 rounded-xl mt-1">Мраморное</p>) : <></>
+                }
+              
+                {/* Замороженое или свежее*/}
+                {ad.isFrozen ? (<p className="bg-blue-400 text-white p-1 rounded-xl mt-1">Замороженое</p>) : 
+                  (<p className="bg-green-400 p-1 rounded-xl mt-1">Свежее</p>)
+                }
               </div>
             </div>
 
           </div>
-          
         </div>
-
       ))}
-
     </>
   );
 };
