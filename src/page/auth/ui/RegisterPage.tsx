@@ -1,7 +1,7 @@
 // app/register/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
@@ -9,22 +9,53 @@ import { Form, Input, Button } from "@heroui/react";
 import Link from "next/link";
 import { GridDev } from "./GridDev";
 
-const signUpSchema = z.object({
-  email: z.string().email("Неверный e‑mail"),
+// Схема валидации
+const baseSchema = z.object({
+  email: z.string().email("Некорректный ввод почты"),
   password: z.string()
-    .min(5, "Минимум 5 символов")
+    .min(8, "Минимум 8 символов")
     .max(25, "Максимум 25 символов"),
   confirmPassword: z.string()
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Пароли не совпадают",
-  path: ["confirmPassword"]
+    .min(8, "Минимум 8 символов")
+    .max(25, "Максимум 25 символов"),
 });
 
-type FormErrors = {
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  general?: string;
+const signUpSchema = baseSchema.refine(
+  data => data.password === data.confirmPassword,
+  {
+    message: "Пароли не совпадают",
+    path: ["confirmPassword"]
+  }
+);
+
+type FormData = z.infer<typeof signUpSchema>;
+type FormErrors = Partial<Record<keyof FormData, string>> & { general?: string };
+// Добавляем состояние для отслеживания "тронутых" полей
+type TouchedFields = Partial<Record<keyof FormData, boolean>>;
+
+// Исправленная функция валидации
+const validateField = (
+  schema: z.ZodEffects<any> | z.ZodObject<any>,
+  fieldName: keyof FormData,
+  value: string
+): string | undefined => {
+  try {
+    const baseSchema = schema instanceof z.ZodEffects 
+      ? schema.innerType() 
+      : schema;
+
+    if (!(baseSchema instanceof z.ZodObject)) {
+      return "Неверная схема валидации";
+    }
+
+    const fieldSchema = baseSchema.pick({ [fieldName]: true });
+    fieldSchema.parse({ [fieldName]: value });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return error.errors[0].message;
+    }
+    return "Ошибка валидации";
+  }
 };
 
 export const RegisterPage = () => {
@@ -32,35 +63,96 @@ export const RegisterPage = () => {
   const router = useRouter();
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
+
+  const [touched, setTouched] = useState<TouchedFields>({});
+
+  const toggleVisibility = () => setIsVisible(!isVisible);
+
+  /* 
+  Если ввод с пустого поля, то валидация применяется только при потере фокуса. 
+  А если изменение уже введенных данных, ошибочных или корректных, то применяется валидация при изменении,
+  так как поле сохраняет статус "в фокусе", пока не будет очищено.
+  Проверка совпадения введенных паролей осуществляется только при отправке формы.
+  */
+
+  // Валидация при изменении
+  const handleChange = useCallback(
+    (field: keyof FormData, value: string) => {
+      setFormData(prev => ({ ...prev, [field]: value }));
+
+      // Сбрасываем ошибку при пустом поле
+      if (value === "") {
+        setErrors(prev => ({ ...prev, [field]: undefined }));
+        setTouched(prev => ({ ...prev, [field]: false })); // Сбрасываем тронутость
+        return;
+      }
+      
+      // Валидируем только если поле было "тронуто" и значение не пустое
+      if (touched[field]) {
+        const error = validateField(signUpSchema, field, value);
+        setErrors(prev => ({ ...prev, [field]: error }));
+      }
+
+    },
+    [touched]
+  );
+
+  // Валидация при потере фокуса
+  const handleBlur = useCallback((field: keyof FormData) => {
+    // Помечаем как тронутое только если значение не пустое
+    if (formData[field].trim() !== "") {
+      setTouched(prev => ({ ...prev, [field]: true }));
+      const error = validateField(signUpSchema, field, formData[field]);
+      setErrors(prev => ({ ...prev, [field]: error }));
+    }
+  }, [formData]);
+
+  // Валидация формы при отправке
+  const validateForm = () => {
+
+    // Помечаем все поля как тронутые при отправке
+    setTouched({
+      email: true,
+      password: true,
+      confirmPassword: true
+    });
+
+    try {
+      signUpSchema.parse(formData);
+      setErrors({});
+      return true;
+    } 
+    catch (error) 
+    {
+      if (error instanceof z.ZodError) {
+        const newErrors: FormErrors = {};
+        error.errors.forEach(err => {
+          const path = err.path[0] as keyof FormData;
+          newErrors[path] = err.message;
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-
     e.preventDefault();
-    setErrors({});
+    if (!validateForm()) return;
 
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-      confirmPassword: formData.get("confirmPassword") as string
-    };
+    console.log("Отправляемые данные:", {
+      formData
+    });
 
-
-    // Клиентская валидация через zod
-    try {
-      signUpSchema.parse(data);
-    } catch (zErr) {
-      const errorMap: FormErrors = {};
-      (zErr as z.ZodError).issues.forEach((issue) => {
-        const path = issue.path[0] as keyof FormErrors;
-        errorMap[path] = issue.message;
-      });
-      setErrors(errorMap);
-      return;
-    }
-
+    // Отправка данных
     setLoading(true);
-    
     try {
       const res = await fetch("http://localhost:8080/api/v3/register", {
         method: "POST",
@@ -68,18 +160,18 @@ export const RegisterPage = () => {
           "Content-Type": "application/json",
           "Accept": "application/json",
         },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-          confirmPassword: data.confirmPassword
+        body: JSON.stringify({ 
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword
         }),
       });
 
       const result = await res.json();
 
+      // Обработка ошибок с сервера
       if (!res.ok) {
-        // Обработка ошибок с сервера
-        if (result.error === "Email already exists") {
+        if (result.message === `Email ${formData.email} already in use`) {
           setErrors({ email: "Этот email уже зарегистрирован" });
         } else {
           setErrors({ general: result.error || "Ошибка регистрации" });
@@ -87,14 +179,9 @@ export const RegisterPage = () => {
         return;
       }
 
-
-      console.error("Отправляемые данные:", {
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.confirmPassword
+      console.log("Отправленные данные:", {
+        formData
       });
-
-      
 
       router.push("/login");
     } 
@@ -108,11 +195,7 @@ export const RegisterPage = () => {
     }
 
   };
-
-  const [isVisible, setIsVisible] = useState(false);
-
-  const toggleVisibility = () => setIsVisible(!isVisible);
-
+  
   return (
     <>
       <GridDev/>
@@ -124,8 +207,20 @@ export const RegisterPage = () => {
 
           <Form className="col-span-6 col-start-4 mt-6 grid grid-cols-6 gap-x-4" validationErrors={errors} onSubmit={handleSubmit}>
 
+            {/* 
+            Для соответствия дизайну использую стандартный тип variant="flat" при пустом поле и переключаю
+            на тип bordered при непустом поле так:
+            variant={formData.email === "" ? "flat" : "bordered"}
+
+            Это оказалось самым валидным решением с минимумом дополнительных classNames стилей для управления и без багов.
+            Однако, при переключении типа поля label над полем смещается вправо на толщину появляющейся границы, 
+            что бросается в глаза, => необходим какой-либо костыль.
+            Потому добавил прозрачную границу при пустом поле для flat чтоб искусственно добавить этот отступ.
+            */}
+
+            {/* Почта */}
             <div className="col-span-6">
-              <Input
+              <Input 
                 isClearable
                 isRequired
                 name="email"
@@ -133,20 +228,15 @@ export const RegisterPage = () => {
                 labelPlacement="outside"
                 placeholder="Введите почту"
                 type="email"
-                validate={(value) => {
-                  if (value.length === 0) {
-                    return "Обязательное поле!";
-                  }
+                radius="md"
+                value={formData.email}
 
-                  return value === "admin" ? "Nice try!" : null;
-                }}
-                errorMessage={({ validationDetails, validationErrors }) => {
-                  if (validationDetails.typeMismatch) {
-                    return "Введите корректный адрес!";
-                  }
-    
-                  return validationErrors;
-                }}
+                onValueChange={(value) => handleChange("email", value)}
+                onBlur={() => handleBlur("email")}
+                isInvalid={!!(touched.email && errors.email)}
+                errorMessage={touched.email ? errors.email : undefined}
+                variant={formData.email === "" ? "flat" : "bordered"}
+                classNames={{ inputWrapper: formData.email === "" ? "border-2 border-transparent" : errors.email ? "" : "border-green-400" }}
               />
             </div>
                 
@@ -159,20 +249,14 @@ export const RegisterPage = () => {
                 labelPlacement="outside"
                 placeholder="Введите пароль"
                 type={isVisible ? "text" : "password"}
-                validate={(value) => {
-                  if (value.length === 0) {
-                    return "Обязательное поле!";
-                  }
-                  if (value.length < 5) {
-                    return "Пароль должен быть не короче 5 символов!";
-                  }
-                  if (value.length > 25) {
-                    return "Пароль должен быть не длиннее 25 символов!";
-                  }
+                value={formData.password}
 
-                  return value === "admin" ? "Nice try!" : null;
-                }}
-                
+                onValueChange={(value) => handleChange("password", value)}
+                onBlur={() => handleBlur("password")}
+                isInvalid={!!(touched.password && errors.password)}
+                errorMessage={touched.password ? errors.password : undefined}
+                variant={formData.password === "" ? "flat" : "bordered"}
+                classNames={{ inputWrapper: formData.password === "" ? "border-2 border-transparent" : errors.password ? "" : "border-green-400" }}
                 
                 endContent={
                   <button
@@ -200,20 +284,14 @@ export const RegisterPage = () => {
                 labelPlacement="outside"
                 placeholder="Введите пароль"
                 type={isVisible ? "text" : "password"}
-                validate={(value) => {
-                  if (value.length === 0) {
-                    return "Обязательное поле!";
-                  }
-                  if (value.length < 5) {
-                    return "Пароль должен быть не короче 5 символов!";
-                  }
-                  if (value.length > 25) {
-                    return "Пароль должен быть не длиннее 25 символов!";
-                  }
+                value={formData.confirmPassword}
 
-                  return value === "admin" ? "Nice try!" : null;
-                }}
-                
+                onValueChange={(value) => handleChange("confirmPassword", value)}
+                onBlur={() => handleBlur("confirmPassword")}
+                isInvalid={!!(touched.confirmPassword && errors.confirmPassword)}
+                errorMessage={touched.confirmPassword ? errors.confirmPassword : undefined}
+                variant={formData.confirmPassword === "" ? "flat" : "bordered"}
+                classNames={{ inputWrapper: formData.confirmPassword === "" ? "border-2 border-transparent" : errors.confirmPassword ? "" : "border-green-400" }}
                 
                 endContent={
                   <button
@@ -240,7 +318,7 @@ export const RegisterPage = () => {
               <p className="col-span-3 text-red-500 text-sm">{errors.general}</p>
             )}
         
-            <Button className="col-span-6 mt-3 bg-blue-600 text-white" type="submit">Зарегистрироваться</Button>
+            <Button isLoading={loading} className="col-span-6 mt-3 bg-blue-600 text-white" type="submit">Зарегистрироваться</Button>
             <Button as={Link} href="/login" variant="bordered" className="col-span-6 bg-gray-100">Войти</Button>
           </Form>
 
