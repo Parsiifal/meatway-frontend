@@ -9,69 +9,83 @@ import { Form, Input, Button } from "@heroui/react";
 import Link from "next/link";
 import { GridDev } from "./GridDev";
 
+import {
+  registrationSchema,
+  RegistrationFormData,
+  FormErrors,
+  TouchedFields,
+  validateField,
+} from "../lib/authValidation";
+
+import { useZodForm } from "../model/useZodForm";
+
 // Схема валидации
-const baseSchema = z.object({
-  email: z.string().email("Некорректный ввод почты"),
-  password: z.string()
-    .min(8, "Минимум 8 символов")
-    .max(25, "Максимум 25 символов"),
-  confirmPassword: z.string()
-    .min(8, "Минимум 8 символов")
-    .max(25, "Максимум 25 символов"),
-});
+// const baseSchema = z.object({
+//   email: z.string().email("Некорректный ввод почты"),
+//   password: z.string()
+//     .min(8, "Минимум 8 символов")
+//     .max(25, "Максимум 25 символов"),
+//   confirmPassword: z.string()
+//     .min(8, "Минимум 8 символов")
+//     .max(25, "Максимум 25 символов"),
+// });
 
-const signUpSchema = baseSchema.refine(
-  data => data.password === data.confirmPassword,
-  {
-    message: "Пароли не совпадают",
-    path: ["confirmPassword"]
-  }
-);
+// const signUpSchema = baseSchema.refine(
+//   data => data.password === data.confirmPassword,
+//   {
+//     message: "Пароли не совпадают",
+//     path: ["confirmPassword"]
+//   }
+// );
 
-type FormData = z.infer<typeof signUpSchema>;
-type FormErrors = Partial<Record<keyof FormData, string>> & { general?: string };
+//type FormData = z.infer<typeof signUpSchema>;
+//type FormErrors = Partial<Record<keyof FormData, string>> & { general?: string };
 // Добавляем состояние для отслеживания "тронутых" полей
-type TouchedFields = Partial<Record<keyof FormData, boolean>>;
+//type TouchedFields = Partial<Record<keyof FormData, boolean>>;
 
-// Исправленная функция валидации
-const validateField = (
-  schema: z.ZodEffects<any> | z.ZodObject<any>,
-  fieldName: keyof FormData,
-  value: string
-): string | undefined => {
-  try {
-    const baseSchema = schema instanceof z.ZodEffects 
-      ? schema.innerType() 
-      : schema;
+// // Исправленная функция валидации
+// const validateField = (
+//   schema: z.ZodEffects<any> | z.ZodObject<any>,
+//   fieldName: keyof FormData,
+//   value: string
+// ): string | undefined => {
+//   try {
+//     const baseSchema = schema instanceof z.ZodEffects 
+//       ? schema.innerType() 
+//       : schema;
 
-    if (!(baseSchema instanceof z.ZodObject)) {
-      return "Неверная схема валидации";
-    }
+//     if (!(baseSchema instanceof z.ZodObject)) {
+//       return "Неверная схема валидации";
+//     }
 
-    const fieldSchema = baseSchema.pick({ [fieldName]: true });
-    fieldSchema.parse({ [fieldName]: value });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return error.errors[0].message;
-    }
-    return "Ошибка валидации";
-  }
-};
+//     const fieldSchema = baseSchema.pick({ [fieldName]: true });
+//     fieldSchema.parse({ [fieldName]: value });
+//   } catch (error) {
+//     if (error instanceof z.ZodError) {
+//       return error.errors[0].message;
+//     }
+//     return "Ошибка валидации";
+//   }
+// };
 
 export const RegisterPage = () => {
 
   const router = useRouter();
-  const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  const [formData, setFormData] = useState({
+  
+  const [errors, setErrors] = useState<FormErrors<RegistrationFormData>>({});
+  
+  
+
+  const [formData, setFormData] = useState<RegistrationFormData>({
     email: "",
     password: "",
     confirmPassword: ""
   });
 
-  const [touched, setTouched] = useState<TouchedFields>({});
+  const [touched, setTouched] = useState<TouchedFields<RegistrationFormData>>({});
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -84,7 +98,7 @@ export const RegisterPage = () => {
 
   // Валидация при изменении
   const handleChange = useCallback(
-    (field: keyof FormData, value: string) => {
+    (field: keyof RegistrationFormData, value: string) => {
       setFormData(prev => ({ ...prev, [field]: value }));
 
       // Сбрасываем ошибку при пустом поле
@@ -96,7 +110,7 @@ export const RegisterPage = () => {
       
       // Валидируем только если поле было "тронуто" и значение не пустое
       if (touched[field]) {
-        const error = validateField(signUpSchema, field, value);
+        const error = validateField(registrationSchema, field, value);
         setErrors(prev => ({ ...prev, [field]: error }));
       }
 
@@ -105,11 +119,11 @@ export const RegisterPage = () => {
   );
 
   // Валидация при потере фокуса
-  const handleBlur = useCallback((field: keyof FormData) => {
+  const handleBlur = useCallback((field: keyof RegistrationFormData) => {
     // Помечаем как тронутое только если значение не пустое
     if (formData[field].trim() !== "") {
       setTouched(prev => ({ ...prev, [field]: true }));
-      const error = validateField(signUpSchema, field, formData[field]);
+      const error = validateField(registrationSchema, field, formData[field]);
       setErrors(prev => ({ ...prev, [field]: error }));
     }
   }, [formData]);
@@ -125,16 +139,16 @@ export const RegisterPage = () => {
     });
 
     try {
-      signUpSchema.parse(formData);
+      registrationSchema.parse(formData);
       setErrors({});
       return true;
     } 
     catch (error) 
     {
       if (error instanceof z.ZodError) {
-        const newErrors: FormErrors = {};
+        const newErrors: FormErrors<RegistrationFormData> = {};
         error.errors.forEach(err => {
-          const path = err.path[0] as keyof FormData;
+          const path = err.path[0] as keyof RegistrationFormData;
           newErrors[path] = err.message;
         });
         setErrors(newErrors);
@@ -178,10 +192,6 @@ export const RegisterPage = () => {
         }
         return;
       }
-
-      console.log("Отправленные данные:", {
-        formData
-      });
 
       router.push("/login");
     } 
@@ -314,9 +324,7 @@ export const RegisterPage = () => {
               <p className="text-sm text-blue-500">Забыли пароль?</p>
             </div>
 
-            {errors.general && (
-              <p className="col-span-3 text-red-500 text-sm">{errors.general}</p>
-            )}
+            {errors.general && (<p className="col-span-3 text-red-500 text-sm">{errors.general}</p>)}
         
             <Button isLoading={loading} className="col-span-6 mt-3 bg-blue-600 text-white" type="submit">Зарегистрироваться</Button>
             <Button as={Link} href="/login" variant="bordered" className="col-span-6 bg-gray-100">Войти</Button>
