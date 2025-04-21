@@ -1,13 +1,12 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Form, Input, Button } from "@heroui/react";
+import { Form, Input, Button, addToast } from "@heroui/react";
 import { useAuthValidators } from "../hooks/useAuthValidators";
 import { loginSchema, LoginFormData } from "../model/authValidationSchemes";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/shared/ui";
 import Link from "next/link";
-
-import { GridDev } from "./GridDev";
+//import { GridDev } from "./GridDev";
 
 
 export const LoginPage = () => {
@@ -56,23 +55,20 @@ export const LoginPage = () => {
           }
           return;
         }
+        else {
+          // Получаем токен из ответа сервера
+          const { token } = result;
+          console.log("Токен получен");
+          // Сохраняем токен в localStorage
+          localStorage.setItem("authToken", token);
+          router.push("/main");
+        }
   
-        // Получаем токен из ответа сервера
-        const { token } = result;
-
-        console.log(token);
-
-        // Сохраняем токен в localStorage
-        localStorage.setItem("authToken", token);
-
-        router.push("/main");
       } 
-      catch (error) 
-      {
+      catch (error) {
         setErrors({ general: "Сетевая ошибка" });
       } 
-      finally 
-      {
+      finally {
         setLoading(false);
       }
     },
@@ -80,12 +76,17 @@ export const LoginPage = () => {
 
   return (
     <>
-      <GridDev/>
+      {/* <GridDev/> */}
     
       <div className="w-4/5 max-w-screen-md mx-auto">
           
-        <div className="grid grid-cols-12 gap-x-4 mt-52 border border-gray-500">
-          <h1 className="col-span-6 col-start-4 text-3xl text-center font-semibold">Вход в профиль</h1>
+        <div className="grid grid-cols-12 gap-x-4 mt-[20vh]">
+
+          <div className="col-span-2 col-start-4 text-left">
+            <Link href="/main" className="text-sm hover:text-blue-500">На главную</Link>
+          </div>
+
+          <h1 className="col-span-6 col-start-4 mt-5 text-3xl text-center font-semibold">Вход в профиль</h1>
 
           <Form className="col-span-6 col-start-4 mt-6 grid grid-cols-6 gap-x-4" validationErrors={errors} onSubmit={handleSubmit}>
 
@@ -145,14 +146,29 @@ export const LoginPage = () => {
               />
             </div>
 
-            <div className="col-span-3 col-end-7 text-right border border-gray-500">
-              <p className="text-sm text-blue-500">Забыли пароль?</p>
+            <div className="col-span-3 col-end-7 text-right">
+              <Link href="#" className="text-sm text-blue-500 hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  addToast({
+                    title: "Мои соболезнования",
+                    timeout: 1500,
+                    color: "primary",
+                    variant: "solid",
+                    classNames: {
+                      base: "mt-[8vh]",
+                      title: "text-md",
+                    }
+                  });
+                }}>
+                Забыли пароль?
+              </Link>
             </div>
 
             {errors.general && (<p className="col-span-3 text-red-500 text-sm">{errors.general}</p>)}
         
             <Button isLoading={loading} className="col-span-6 mt-3 bg-blue-600 text-white" type="submit">Войти</Button>
-            <Button as={Link} href="/register" variant="bordered" className="col-span-6 bg-gray-100">Зарегистрироваться</Button>
+            <Button as={Link} href="/auth/registration" variant="bordered" className="col-span-6 bg-gray-100">Зарегистрироваться</Button>
           </Form>
 
         </div>

@@ -13,10 +13,10 @@ export const RightNavbarSector = () => {
       {/* Правая часть: вход, меню */}
 
       <NavbarItem className="hidden lg:flex">
-        <Link href="/login">Вход</Link>
+        <Link href="/auth/login" className="font-semibold hover:text-blue-600">Вход</Link>
       </NavbarItem>
       <NavbarItem> 
-        <Button as={Link} color="success" href="#" variant="flat">Регистрация</Button>
+        <Button as={Link} color="success" href="/auth/registration" variant="flat">Регистрация</Button>
       </NavbarItem>
 
       <Dropdown>

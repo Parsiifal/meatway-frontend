@@ -1,16 +1,15 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Form, Input, Button } from "@heroui/react";
+import { Form, Input, Button, addToast } from "@heroui/react";
 import { useAuthValidators } from "../hooks/useAuthValidators";
 import { registrationSchema, RegistrationFormData } from "../model/authValidationSchemes";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/shared/ui";
 import Link from "next/link";
+//import { GridDev } from "./GridDev";
 
-import { GridDev } from "./GridDev";
 
-
-export const RegisterPage = () => {
+export const RegistrationPage = () => {
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -68,15 +67,26 @@ export const RegisterPage = () => {
           }
           return;
         }
+        else {
+          addToast({
+            title: "Профиль зарегистрирован",
+            description: "Пожалуйста, выполните вход",
+            color: "primary",
+            variant: "solid",
+            timeout: 3500,
+            classNames: {
+              base: "mt-[6vh]",
+              title: "text-md",
+            }
+          });
+          router.push("/auth/login");
+        }
 
-        router.push("/login");
       } 
-      catch (error) 
-      {
+      catch (error) {
         setErrors({ general: "Сетевая ошибка" });
       } 
-      finally 
-      {
+      finally {
         setLoading(false);
       }
     },
@@ -84,12 +94,17 @@ export const RegisterPage = () => {
   
   return (
     <>
-      <GridDev/>
+      {/* <GridDev/> */}
         
       <div className="w-4/5 max-w-screen-md mx-auto">
           
-        <div className="grid grid-cols-12 gap-x-4 mt-52 border border-gray-500">
-          <h1 className="col-span-6 col-start-4 text-3xl text-center font-semibold">Регистрация профиля</h1>
+        <div className="grid grid-cols-12 gap-x-4 mt-[17vh]">
+
+          <div className="col-span-2 col-start-4 text-left">
+            <Link href="/main" className="text-sm hover:text-blue-500">На главную</Link>
+          </div>
+
+          <h1 className="col-span-6 col-start-4 mt-5 text-3xl text-center font-semibold">Регистрация профиля</h1>
 
           <Form className="col-span-6 col-start-4 mt-6 grid grid-cols-6 gap-x-4" validationErrors={errors} onSubmit={handleSubmit}>
 
@@ -195,14 +210,10 @@ export const RegisterPage = () => {
               />
             </div>
 
-            <div className="col-span-3 col-end-7 text-right border border-gray-500">
-              <p className="text-sm text-blue-500">Забыли пароль?</p>
-            </div>
-
             {errors.general && (<p className="col-span-3 text-red-500 text-sm">{errors.general}</p>)}
         
-            <Button isLoading={loading} className="col-span-6 mt-3 bg-blue-600 text-white" type="submit">Зарегистрироваться</Button>
-            <Button as={Link} href="/login" variant="bordered" className="col-span-6 bg-gray-100">Войти</Button>
+            <Button isLoading={loading} className="col-span-6 mt-7 bg-blue-600 text-white" type="submit">Зарегистрироваться</Button>
+            <Button as={Link} href="/auth/login" variant="bordered" className="col-span-6 bg-gray-100">Войти</Button>
           </Form>
 
         </div>
