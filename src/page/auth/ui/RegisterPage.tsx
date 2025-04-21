@@ -74,18 +74,18 @@ export const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  
-  const [errors, setErrors] = useState<FormErrors<RegistrationFormData>>({});
+
+  // const [errors, setErrors] = useState<FormErrors<RegistrationFormData>>({});
   
   
 
-  const [formData, setFormData] = useState<RegistrationFormData>({
-    email: "",
-    password: "",
-    confirmPassword: ""
-  });
+  // const [formData, setFormData] = useState<RegistrationFormData>({
+  //   email: "",
+  //   password: "",
+  //   confirmPassword: ""
+  // });
 
-  const [touched, setTouched] = useState<TouchedFields<RegistrationFormData>>({});
+  // const [touched, setTouched] = useState<TouchedFields<RegistrationFormData>>({});
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -96,115 +96,175 @@ export const RegisterPage = () => {
   Проверка совпадения введенных паролей осуществляется только при отправке формы.
   */
 
-  // Валидация при изменении
-  const handleChange = useCallback(
-    (field: keyof RegistrationFormData, value: string) => {
-      setFormData(prev => ({ ...prev, [field]: value }));
+  // // Валидация при изменении
+  // const handleChange = useCallback(
+  //   (field: keyof RegistrationFormData, value: string) => {
+  //     setFormData(prev => ({ ...prev, [field]: value }));
 
-      // Сбрасываем ошибку при пустом поле
-      if (value === "") {
-        setErrors(prev => ({ ...prev, [field]: undefined }));
-        setTouched(prev => ({ ...prev, [field]: false })); // Сбрасываем тронутость
-        return;
-      }
+  //     // Сбрасываем ошибку при пустом поле
+  //     if (value === "") {
+  //       setErrors(prev => ({ ...prev, [field]: undefined }));
+  //       setTouched(prev => ({ ...prev, [field]: false })); // Сбрасываем тронутость
+  //       return;
+  //     }
       
-      // Валидируем только если поле было "тронуто" и значение не пустое
-      if (touched[field]) {
-        const error = validateField(registrationSchema, field, value);
-        setErrors(prev => ({ ...prev, [field]: error }));
-      }
+  //     // Валидируем только если поле было "тронуто" и значение не пустое
+  //     if (touched[field]) {
+  //       const error = validateField(registrationSchema, field, value);
+  //       setErrors(prev => ({ ...prev, [field]: error }));
+  //     }
 
+  //   },
+  //   [touched]
+  // );
+
+  // // Валидация при потере фокуса
+  // const handleBlur = useCallback((field: keyof RegistrationFormData) => {
+  //   // Помечаем как тронутое только если значение не пустое
+  //   if (formData[field].trim() !== "") {
+  //     setTouched(prev => ({ ...prev, [field]: true }));
+  //     const error = validateField(registrationSchema, field, formData[field]);
+  //     setErrors(prev => ({ ...prev, [field]: error }));
+  //   }
+  // }, [formData]);
+
+  // // Валидация формы при отправке
+  // const validateForm = () => {
+
+  //   // Помечаем все поля как тронутые при отправке
+  //   setTouched({
+  //     email: true,
+  //     password: true,
+  //     confirmPassword: true
+  //   });
+
+  //   try {
+  //     registrationSchema.parse(formData);
+  //     setErrors({});
+  //     return true;
+  //   } 
+  //   catch (error) 
+  //   {
+  //     if (error instanceof z.ZodError) {
+  //       const newErrors: FormErrors<RegistrationFormData> = {};
+  //       error.errors.forEach(err => {
+  //         const path = err.path[0] as keyof RegistrationFormData;
+  //         newErrors[path] = err.message;
+  //       });
+  //       setErrors(newErrors);
+  //     }
+  //     return false;
+  //   }
+  // };
+
+
+  const {
+    formData,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setErrors
+  } = useZodForm<RegistrationFormData>({
+    schema: registrationSchema,
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
-    [touched]
-  );
-
-  // Валидация при потере фокуса
-  const handleBlur = useCallback((field: keyof RegistrationFormData) => {
-    // Помечаем как тронутое только если значение не пустое
-    if (formData[field].trim() !== "") {
-      setTouched(prev => ({ ...prev, [field]: true }));
-      const error = validateField(registrationSchema, field, formData[field]);
-      setErrors(prev => ({ ...prev, [field]: error }));
-    }
-  }, [formData]);
-
-  // Валидация формы при отправке
-  const validateForm = () => {
-
-    // Помечаем все поля как тронутые при отправке
-    setTouched({
-      email: true,
-      password: true,
-      confirmPassword: true
-    });
-
-    try {
-      registrationSchema.parse(formData);
-      setErrors({});
-      return true;
-    } 
-    catch (error) 
-    {
-      if (error instanceof z.ZodError) {
-        const newErrors: FormErrors<RegistrationFormData> = {};
-        error.errors.forEach(err => {
-          const path = err.path[0] as keyof RegistrationFormData;
-          newErrors[path] = err.message;
+    onSubmit: async (data) => {
+      setLoading(true);
+      try {
+        const res = await fetch("http://localhost:8080/api/v3/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            email: data.email,
+            password: data.password,
+            confirmPassword: data.confirmPassword,
+          }),
         });
-        setErrors(newErrors);
-      }
-      return false;
-    }
-  };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+        const result = await res.json();
 
-    console.log("Отправляемые данные:", {
-      formData
-    });
-
-    // Отправка данных
-    setLoading(true);
-    try {
-      const res = await fetch("http://localhost:8080/api/v3/register", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: JSON.stringify({ 
-          email: formData.email,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword
-        }),
-      });
-
-      const result = await res.json();
-
-      // Обработка ошибок с сервера
-      if (!res.ok) {
-        if (result.message === `Email ${formData.email} already in use`) {
-          setErrors({ email: "Этот email уже зарегистрирован" });
-        } else {
-          setErrors({ general: result.error || "Ошибка регистрации" });
+        // Обработка ошибок с сервера
+        if (!res.ok) {
+          if (result.message === `Email ${formData.email} already in use`) {
+            setErrors({ email: "Этот email уже зарегистрирован" });
+          } else {
+            setErrors({ general: result.error || "Ошибка регистрации" });
+          }
+          return;
         }
-        return;
+
+        router.push("/login");
+      } 
+      catch (error) 
+      {
+        setErrors({ general: "Сетевая ошибка" });
+      } 
+      finally 
+      {
+        setLoading(false);
       }
+    },
+  });
 
-      router.push("/login");
-    } 
-    catch (error) 
-    {
-      setErrors({ general: "Сетевая ошибка" });
-    } 
-    finally 
-    {
-      setLoading(false);
-    }
 
-  };
+
+
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   if (!validateForm()) return;
+
+  //   console.log("Отправляемые данные:", {
+  //     formData
+  //   });
+
+  //   // Отправка данных
+  //   setLoading(true);
+  //   try {
+  //     const res = await fetch("http://localhost:8080/api/v3/register", {
+  //       method: "POST",
+  //       headers: { 
+  //         "Content-Type": "application/json",
+  //         "Accept": "application/json",
+  //       },
+  //       body: JSON.stringify({ 
+  //         email: formData.email,
+  //         password: formData.password,
+  //         confirmPassword: formData.confirmPassword
+  //       }),
+  //     });
+
+  //     const result = await res.json();
+
+  //     // Обработка ошибок с сервера
+  //     if (!res.ok) {
+  //       if (result.message === `Email ${formData.email} already in use`) {
+  //         setErrors({ email: "Этот email уже зарегистрирован" });
+  //       } else {
+  //         setErrors({ general: result.error || "Ошибка регистрации" });
+  //       }
+  //       return;
+  //     }
+
+  //     router.push("/login");
+  //   } 
+  //   catch (error) 
+  //   {
+  //     setErrors({ general: "Сетевая ошибка" });
+  //   } 
+  //   finally 
+  //   {
+  //     setLoading(false);
+  //   }
+
+
   
   return (
     <>

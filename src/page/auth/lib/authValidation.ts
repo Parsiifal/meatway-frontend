@@ -7,7 +7,7 @@ export const passwordSchema = z.string()
   .min(8, "Минимум 8 символов")
   .max(25, "Максимум 25 символов");
 
-  
+
 // Общая схема для входа и регистрации (без confirmPassword)
 export const baseAuthSchema = z.object({
   email: emailSchema,
@@ -35,6 +35,7 @@ export const registrationSchema = baseAuthSchema
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegistrationFormData = z.infer<typeof registrationSchema>;
 
+// Перенести:
 // Общие типы ошибок и трекера "потроганных" полей
 export type FormErrors<T> = Partial<Record<keyof T, string>> & {general?: string;};
 export type TouchedFields<T> = Partial<Record<keyof T, boolean>>;

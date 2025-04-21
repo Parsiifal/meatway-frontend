@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
-import { ZodError, ZodType } from "zod";
+import { ZodObject, ZodEffects, ZodError } from "zod";
 
-import { FormErrors, TouchedFields, } from "../lib/authValidation";
+import { FormErrors, TouchedFields, validateField } from "../lib/authValidation";
 
 interface UseZodFormOptions<T> {
-  schema: ZodType<T>;
+  schema: ZodObject<any> | ZodEffects<ZodObject<any>>;
   defaultValues: T;
   onSubmit: (data: T) => Promise<void> | void;
 }
@@ -34,15 +34,9 @@ export function useZodForm<T extends Record<string, any>>({
 
       // Валидируем только если поле было "тронуто" и значение не пустое
       if (touched[field]) {
-        try {
-          (schema as any).shape[field].parse(value);
-          setErrors((e) => ({ ...e, [field]: undefined }));
-        } 
-        catch (err) {
-          if (err instanceof ZodError) {
-            setErrors((e) => ({ ...e, [field]: err.errors[0].message }));
-          }
-        }
+        const error = validateField(schema, field, value);
+        setErrors(prev => ({ ...prev, [field]: error }));
+        
       }
     },
     [schema, touched]
@@ -57,15 +51,8 @@ export function useZodForm<T extends Record<string, any>>({
       if (typeof val === "string" && val.trim() !== "") {
         setTouched((t) => ({ ...t, [field]: true }));
 
-        try {
-          (schema as any).shape[field].parse(val);
-          setErrors((e) => ({ ...e, [field]: undefined }));
-        } 
-        catch (err) {
-          if (err instanceof ZodError) {
-            setErrors((e) => ({ ...e, [field]: err.errors[0].message }));
-          }
-        }
+        const error = validateField(schema, field, formData[field]);
+        setErrors(prev => ({ ...prev, [field]: error }));
       }
     }, 
     [formData, schema]
@@ -122,5 +109,6 @@ export function useZodForm<T extends Record<string, any>>({
     handleChange,
     handleBlur,
     handleSubmit,
+    setErrors,
   };
 }
