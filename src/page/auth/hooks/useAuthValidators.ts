@@ -1,19 +1,22 @@
 import { useState, useCallback } from "react";
-import { ZodObject, ZodEffects, ZodError } from "zod";
+import { z, ZodError } from "zod";
 
-import { FormErrors, TouchedFields, validateField } from "../lib/authValidation";
+// Общие типы ошибок и трекера "потроганных" полей
+type FormErrors<T extends Record<string, unknown>> = Partial<Record<keyof T, string>> & {general?: string;};
+type TouchedFields<T extends Record<string, unknown>> = Partial<Record<keyof T, boolean>>;
 
-interface UseZodFormOptions<T> {
-  schema: ZodObject<any> | ZodEffects<ZodObject<any>>;
+interface UseAuthValidatorsOptions<T extends Record<string, unknown>> {
+  schema: z.ZodType<T>;
   defaultValues: T;
   onSubmit: (data: T) => Promise<void> | void;
 }
 
-export function useZodForm<T extends Record<string, any>>({
+
+export function useAuthValidators<T extends Record<string, unknown>>({
   schema,
   defaultValues,
   onSubmit,
-}: UseZodFormOptions<T>) {
+}: UseAuthValidatorsOptions<T>) {
 
   const [formData, setFormData] = useState<T>(defaultValues);
   const [errors, setErrors] = useState<FormErrors<T>>({});
@@ -36,7 +39,6 @@ export function useZodForm<T extends Record<string, any>>({
       if (touched[field]) {
         const error = validateField(schema, field, value);
         setErrors(prev => ({ ...prev, [field]: error }));
-        
       }
     },
     [schema, touched]
@@ -50,7 +52,6 @@ export function useZodForm<T extends Record<string, any>>({
       // Помечаем как тронутое только если значение не пустое
       if (typeof val === "string" && val.trim() !== "") {
         setTouched((t) => ({ ...t, [field]: true }));
-
         const error = validateField(schema, field, formData[field]);
         setErrors(prev => ({ ...prev, [field]: error }));
       }
@@ -61,7 +62,6 @@ export function useZodForm<T extends Record<string, any>>({
 
   // Валидация формы при отправке
   const validateForm = useCallback(() => {
-
     // Помечаем все поля как тронутые при отправке
     setTouched(
       Object.keys(defaultValues).reduce(
@@ -106,9 +106,36 @@ export function useZodForm<T extends Record<string, any>>({
     formData,
     errors,
     touched,
+    setErrors,
     handleChange,
     handleBlur,
-    handleSubmit,
-    setErrors,
+    handleSubmit
   };
 }
+
+
+// Функция для валидации одного поля
+const validateField = <T extends Record<string, unknown>>(
+  schema: z.ZodType<T>,
+  fieldName: keyof T,
+  value: unknown
+): string | undefined => {
+
+  // Извлекаем «чистую» схему объекта без эффектов
+  const coreSchema = schema instanceof z.ZodEffects ? schema.innerType() : schema;
+
+  if (!(coreSchema instanceof z.ZodObject)) return "Неверная схема валидации";
+
+  // Достаём нужную под‑схему поля
+  const fieldSchema = coreSchema.shape[fieldName as keyof typeof coreSchema.shape];
+  if (!fieldSchema) return "Неизвестное поле для валидации";
+
+  try {
+    fieldSchema.parse(value);
+    return undefined;
+  } 
+  catch (err) {
+    if (err instanceof z.ZodError) return err.errors[0].message;
+    return "Ошибка валидации";
+  }
+};

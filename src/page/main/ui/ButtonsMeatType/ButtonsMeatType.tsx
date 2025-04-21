@@ -1,4 +1,4 @@
-import { LocationIcon } from "@/shared/ui/icons";
+import { LocationIcon } from "@/shared/ui";
 import "../MainPage.css";
 import { Button } from "@heroui/button";
 

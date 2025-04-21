@@ -1,6 +1,6 @@
 import { NavbarContent, NavbarItem } from "@heroui/react";
 import { Button } from "@heroui/button";
-import { HeartIcon, MessageIcon, ISaleIcon, LocationIcon, CaseIcon } from "@/shared/ui/icons";
+import { HeartIcon, MessageIcon, ISaleIcon, LocationIcon, CaseIcon } from "@/shared/ui";
 //import Link from "next/link";
 import "./CenrtalNavbarSector.css";
 

@@ -1,4 +1,4 @@
-import { MenuIcon } from "@/shared/ui/icons";
+import { MenuIcon } from "@/shared/ui";
 import { Button } from "@heroui/button";
 import { DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
 import { NavbarContent, NavbarItem } from "@heroui/navbar";
