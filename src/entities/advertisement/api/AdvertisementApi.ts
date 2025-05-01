@@ -18,7 +18,7 @@ export const AdvertisementApi = {
   async getAll(meatType: string): Promise<{ data?: AdvertisementUnion[]; error?: string }> {
     try 
     {
-      const token = "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzb3ZhZWQucnUiLCJzdWIiOiJhcnRlbUBleGFtcGxlLmNvbSIsImV4cCI6MTc0NjExNjkzOSwiaWF0IjoxNzQ0OTA3MzM5fQ.sgNRdEo3j6X4-rHeZTox0G7TggZ5J1u5ZAkjOrDDAEBv63zQsHUF3gN0ZnkuFOqxfmgHx4yuOWBSu3hrlKaZk991iYLwRbjNioxbR8a2eP12r9zj2rizhFyHWtpDBdbYunOO9HF9kmI7NgGUEPxXm1nr8fcQqd2czrZHcZ6Ca8LALjZNR9r3SBsgLgv1JPm2oEUig7C9Jr4qgAgJN9St8MTnAZrr6kDvpQH4ZEB7_hXpWrj1fpEfkOxuyXuv1kZhw2aQ9oBHk3ITt0wThEKe0I-pD5_q4z-GFZbkPzVvpRX8Az-qN3M5J5wplt4wt7xJdhmuy-2IqXJOvRZUvj7Ikw";
+      const token = "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzb3ZhZWQucnUiLCJzdWIiOiJhcnRlbWlua2luMjgwNEBnbWFpbC5jb20iLCJleHAiOjE3NDczMjgxMTEsImlhdCI6MTc0NjExODUxMX0.ucchYuldoeRIN36gcAxwl9VBQYo9E5L_56vqk8fbVgUodyeW3OfJ7WDrffWFyMrOwqzi3FS9g7zFFjU0CnnKHFOL4DcKECqJkj34yPmQsZQNTKawdvxnskdjPQwtAX9Vg8-A1T0SOLfFTkQq3465NISA3_M4AL05X4MZ_l66FeuCMnqn44OznW9BDs62NkaJ-pN6FMY1n2bni5VQkpJ2IWyiyxUHWikVU0Xjj35BiipkBAUeMGd3AWvBAxORTyBGzI1CzylGN6lj7LnG3Ku1x5XHU6ZAkCyK4I_yEfuEE4cCWUYVPm1AYo_OcEQTqgp80JrmGiP3BdhCNTIqWUekBQ";
 
       const endpointMap: Record<string, string> = {
         all: "/api/v1/advertisements",

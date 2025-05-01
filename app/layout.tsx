@@ -4,6 +4,7 @@ import "@/app/styles/globals.css";
 import { Providers } from "@/app/providers/providers";
 import { NavbarShowcase } from "@/widgets/navbar";
 import { NavbarProvider } from "@/widgets/navbar";
+//import { RouteGuard } from "@/features/auth/model/PrivateRoute";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
         <link rel="icon" href="/icons/favicon.ico"/>
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        
         <NavbarProvider>
           <Providers>
             <NavbarShowcase/>
@@ -39,6 +41,7 @@ export default function RootLayout({
             </main>
           </Providers>
         </NavbarProvider>
+        
       </body>
     </html>
   );

@@ -1,19 +1,20 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Form, Input, Button, addToast } from "@heroui/react";
 import { useAuthValidators } from "../hooks/useAuthValidators";
 import { loginSchema, LoginFormData } from "../model/authValidationSchemes";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/shared/ui";
+import { login } from "@/page/auth/api/actions";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 //import { GridDev } from "./GridDev";
 
 
 export const LoginPage = () => {
   
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const router = useRouter();
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -35,38 +36,15 @@ export const LoginPage = () => {
 
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:8080/api/v3/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: data.email,
-            password: data.password,
-          }),
-        });
-  
-        const result = await response.json();
-  
-        // Обработка ошибок с сервера
-        if (!response.ok) {
-          if (response.status === 401) {
-            setErrors({ password: "Неверный пароль" });
-          } else {
-            setErrors({ general: result.error || "Ошибка входа" });
-          }
-          return;
-        }
-        else {
-          // Получаем токен из ответа сервера
-          const { token } = result;
-          console.log("Токен получен");
-          // Сохраняем токен в localStorage
-          localStorage.setItem("authToken", token);
+        const errors = await login(data.email, data.password);
+        if (errors) {
+          setErrors(errors);
+        } else {
           router.push("/main");
         }
-  
       } 
       catch (error) {
-        setErrors({ general: "Сетевая ошибка" });
+        setErrors({ general: "Неизвестная ошибкааааа" });
       } 
       finally {
         setLoading(false);
@@ -83,7 +61,7 @@ export const LoginPage = () => {
         <div className="grid grid-cols-12 gap-x-4 mt-[20vh]">
 
           <div className="col-span-2 col-start-4 text-left">
-            <Link href="/main" className="text-sm hover:text-blue-500">На главную</Link>
+            <Link href="/" className="text-sm hover:text-blue-500">Отменить</Link>
           </div>
 
           <h1 className="col-span-6 col-start-4 mt-5 text-3xl text-center font-semibold">Вход в профиль</h1>

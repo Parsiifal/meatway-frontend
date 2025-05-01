@@ -101,7 +101,7 @@ export const RegistrationPage = () => {
         <div className="grid grid-cols-12 gap-x-4 mt-[17vh]">
 
           <div className="col-span-2 col-start-4 text-left">
-            <Link href="/main" className="text-sm hover:text-blue-500">На главную</Link>
+            <Link href="/" className="text-sm hover:text-blue-500">Отменить</Link>
           </div>
 
           <h1 className="col-span-6 col-start-4 mt-5 text-3xl text-center font-semibold">Регистрация профиля</h1>
