@@ -1,6 +1,6 @@
 import { NavbarBrand, NavbarContent, NavbarItem } from "@heroui/navbar";
 import { Input } from "@heroui/input";
-import { LogoIcon, SearchIcon } from "@/shared/ui/icons";
+import { LogoIcon, SearchIcon } from "@/shared/ui";
 
 export const LeftNavbarSector = () => {
   return (

@@ -9,17 +9,29 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/pg-adapter": "^1.8.0",
     "@heroui/react": "^2.7.5",
+    "axios": "^1.8.4",
+    "bcrypt": "^5.1.1",
     "framer-motion": "^12.6.2",
+    "jose": "^6.0.10",
+    "mobx": "^6.13.7",
+    "mobx-react-lite": "^4.1.0",
     "next": "15.2.4",
+    "next-auth": "^5.0.0-beta.25",
+    "pg": "^8.14.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-slick": "^0.30.3",
+    "slick-carousel": "^1.8.1",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-slick": "^0.23.13",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.0",
     "autoprefixer": "^10.4.21",

@@ -35,6 +35,10 @@ const eslintConfig = [
       "indent": ["error", 2], // 2 пробела (или 4, "tab" и т. д.)
       "react/jsx-indent": ["error", 2], // отступы в JSX
       "react/jsx-indent-props": ["error", 2], // отступы у пропсов
+
+      // Отключает проверку используемости для error в catch
+      "@typescript-eslint/no-unused-vars": ["error", { args: "after-used", ignoreRestSiblings: true, vars: "all", caughtErrors: "none" }],
+
     }
   }),
 ];

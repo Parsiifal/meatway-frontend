@@ -18,7 +18,7 @@ export const AboutPage = () => {
 
   return (
     <div className="bg-orange-400">
-      <div className="pt-5 px-10 h-full min-h-[calc(100vh-80px)]">
+      <div className="pt-5 pb-6 px-10 h-full min-h-[calc(100vh-80px)]">
         <div className="w-full h-full mx-auto bg-black rounded-2xl shadow-2xl max-w-[1800px]">
           <div className="flex flex-col items-center">
             <TopCard/>
