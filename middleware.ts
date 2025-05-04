@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decodeJwt } from "jose";
 
-const protectedRoutes = ["/main"];
+const protectedRoutes = ["/main", "/account"];
 
 export default async function middleware(req: NextRequest) {
   
