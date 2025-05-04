@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { isLoggedIn, logout } from "@/page/auth/api/actions";
 import Link from "next/link";
 import { getUserData } from "@/page/account/api/getUserData";
-import { UserDataType } from "@/page/account/model/userDataType";
+import { UserDataType } from "@/page/account/model/types";
 
 // Короч получить все данные пользователя и кинуть запрос на апи роут чтоб получить юрл картинки.
 export const RightNavbarSector = (() => {

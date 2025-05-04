@@ -19,3 +19,15 @@ export type UpdateUserDataType = {
   phoneNumber?: string;
   photo?: Photo;
 };
+
+export type UploadResponse = {
+  status: "success" | "error";
+  data?: Array<{
+    fileName: string;
+    originalName: string;
+    size: number;
+    url: string;
+    mimetype: string;
+  }>;
+  message?: string;
+};

@@ -2,25 +2,13 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { getUserData } from "../api/getUserData";
-import { UpdateUserDataType, UserDataType } from "../model/userDataType";
+import { UserDataType, UpdateUserDataType, UploadResponse } from "../model/types";
 import { Button, Form, Input } from "@heroui/react";
 import { updateUserData } from "../api/updateUserData";
 import { useRef } from "react";
 
-type UploadResponse = {
-  status: "success" | "error";
-  data?: Array<{
-    fileName: string;
-    originalName: string;
-    size: number;
-    url: string;
-    mimetype: string;
-  }>;
-  message?: string;
-};
 
-
-export default function FileLoader () {
+export const AccountComponent = () => {
   
   const [userData, setUserData] = useState<UserDataType | null>(null);
   const [fileData, setFileData] = useState<{ url: string; filename: string } | null>(null);
@@ -151,11 +139,9 @@ export default function FileLoader () {
 
   if (loading) {
     return (
-      <div className="max-w-md mx-auto p-4 text-center">
-        <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto mb-4"></div>
-          <div className="h-48 bg-gray-200 rounded"></div>
-        </div>
+      <div className="grid grid-cols-12 gap-x-4 mt-8 animate-pulse">
+        <div className="col-span-5 col-start-2 h-72 bg-gray-300 rounded-xl"></div>
+        <div className="col-span-5 col-start-7 h-96 bg-gray-300 rounded-xl"></div>
       </div>
     );
   }
@@ -168,9 +154,7 @@ export default function FileLoader () {
     );
   }
 
-  if (!fileData || !userData) {
-    return null;
-  }
+  if (!fileData || !userData) {return null;}
 
   return (
     <div className="grid grid-cols-12 gap-x-4 mt-8">
@@ -207,7 +191,7 @@ export default function FileLoader () {
             type="button"
             isLoading={isLoading}
             onPress={() => fileInputRef.current?.click()}
-            className="p-3 rounded-md bg-blue-500 text-white hover:bg-blue-800"
+            className="p-3 mt-[9px] rounded-md bg-blue-500 text-white hover:bg-blue-800"
             disabled={isLoading}>
             Изменить аватарку
           </Button>
@@ -217,7 +201,7 @@ export default function FileLoader () {
 
 
       {/* Правый столбец - данные */}
-      <div className="col-span-5 col-start-7 border-2 border-blue-500 rounded-xl overflow-hidden">
+      <div className="col-span-5 col-start-7">
         <Form onSubmit={handleSubmit}>
           
           <p className="font-semibold text-lg">Электронная почта</p>
@@ -276,10 +260,10 @@ export default function FileLoader () {
             }}
           />
 
-          <Button type="submit" className="p-3 rounded-md bg-blue-500 text-white hover:bg-blue-800 mt-7">Сохранить изменения</Button>
+          <Button type="submit" className="p-3 rounded-md bg-blue-500 text-white hover:bg-blue-800 mt-5">Сохранить изменения</Button>
         </Form>
       </div>
 
     </div>
   );
-}
+};

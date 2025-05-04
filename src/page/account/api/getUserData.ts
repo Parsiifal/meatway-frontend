@@ -1,5 +1,5 @@
 "use server";
-import { UserDataType } from "../model/userDataType";
+import { UserDataType } from "../model/types";
 import { cookies } from "next/headers";
 
 export const getUserData = async (): Promise<UserDataType> => {
