@@ -5,48 +5,36 @@ import { TopContent } from "./TopContent/TopContent";
 import { ButtonsMeatType } from "./ButtonsMeatType/ButtonsMeatType";
 import { Filters } from "./Filters/Filters";
 import { Advertisement } from "./Advertisements/Advertisement";
-import { AdvertisementUnion } from "@/entities/advertisement/types/AdvertisementType";
-import { AdvertisementApi } from "@/entities/advertisement/api/AdvertisementApi";
+import { AdvertisementUnion } from "@/page/main/model/advertisementTypes";
 import { useState, useEffect } from "react";
+import { getAdvertisements } from "../api/getAdvertisements";
 
-interface MainPageProps {
-  initialAds: AdvertisementUnion[];
-  initialError?: string;
-}
 
-export const MainPage = ({ initialAds, initialError }: MainPageProps) => {
+export const MainPage = () => {
 
-  const [selectedType, setSelectedType] = useState<string>("all"); // выбор типа мяса пользователем
-  const [ads, setAds] = useState<AdvertisementUnion[]>(initialAds); // установка набора объявлений сервером
+  const [selectedType, setSelectedType] = useState<string>("all");
+  const [ads, setAds] = useState<AdvertisementUnion[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const [error, setError] = useState<string | null>(initialError || null);
-  const [loading, setLoading] = useState(false);
-
+  // Загрузить объявления конкретного типа (в том числе всех)
   const fetchAds = async (type: string) => {
     try {
-      setLoading(true);
-      const { data, error } = await AdvertisementApi.getAll(type);
-      
+      setError(null); // Сбрасываем ошибки перед каждым новым запросом
+      const { data, error } = await getAdvertisements(type);
+
       if (error) throw new Error(error);
       if (data) setAds(data);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Ошибка загрузки");
+    } 
+    catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Ошибка загрузки объявлений!");
       setAds([]);
-    } finally {
-      setLoading(false);
+    } 
+    finally {
       console.log(selectedType);
     }
   };
-
-  useEffect(() => {
-    if (selectedType !== "all") {
-      fetchAds(selectedType);
-    } else {
-      setAds(initialAds);
-      setError(initialError || null);
-    }
-  }, [selectedType]);
+  useEffect(() => {fetchAds(selectedType);}, [selectedType]);
 
   return (
     <div>

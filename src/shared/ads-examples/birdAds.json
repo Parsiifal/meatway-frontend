@@ -1,0 +1,35 @@
+{
+  "title": "Цыплята на продажу",
+  "description": "Молодые цыплята, выращенные на натуральном корме",
+  "price": 50,
+  "hasMedicalCertificate": true,
+  "weight": 1,
+  "location": "Санкт-Петербург",
+  "isFrozen": false,
+  "isRetail": false,
+  "birdType": "курица"
+}
+
+{
+  "title": "Курица",
+  "description": "Ну просто хорошая курица",
+  "price": 120,
+  "hasMedicalCertificate": true,
+  "weight": 10,
+  "location": "Москва",
+  "isFrozen": true,
+  "isRetail": false,
+  "birdType": "курица"
+}
+
+{
+  "title": "Молодая утка",
+  "description": "Утка и утка, что еще сказать",
+  "price": 200,
+  "hasMedicalCertificate": true,
+  "weight": 12,
+  "location": "Орехово-Зуево",
+  "isFrozen": true,
+  "isRetail": false,
+  "birdType": "утка"
+}
