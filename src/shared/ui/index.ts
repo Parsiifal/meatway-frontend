@@ -9,3 +9,4 @@ export { LocationIcon } from "./icons/LocationIcon";
 export { CaseIcon } from "./icons/CaseIcon";
 export { EyeFilledIcon } from "./icons/EyeFilledIcon";
 export { EyeSlashFilledIcon } from "./icons/EyeSlashFilledIcon";
+export { BackIcon } from "./icons/BackIcon";

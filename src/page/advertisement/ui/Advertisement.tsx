@@ -5,8 +5,11 @@ import { useEffect, useState } from "react";
 import { getAdvertisementById } from "../api/getAdvertisementById";
 import { CustomSpinner } from "@/shared/ui/components/CustomSpinner";
 import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import Image from "next/image";
 import { Avatar } from "@heroui/react";
+import { ReturnButton } from "@/shared/ui/components/ReturnButton";
 //import { DevGridLg } from "@/shared/dev/DevGridLg";
 
 
@@ -21,31 +24,29 @@ export const Advertisement = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [avatarURL, setAvatarURL] = useState<string>();
+  const [adPhotoURLs, setAdPhotoURLs] = useState<string[]>([]);
 
   // Настройки карусели изображений
   const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: false,
+    dots: true, // Отображаются ли точки навигации?
+    infinite: true, // Бесконечная прокрутка?
+    speed: 500, // Скорость анимации
+    slidesToShow: 1, // Сколько слайдов показывать
+    slidesToScroll: 1, // Сколько слайдов прокручивать
+    arrows: false, // Отключены стрелки
   };
 
   // Получаем информацию об объявлении
   useEffect(() => {
     const fetchAdvertisement = async () => {
       try {
-        if (!meatType || !adId) throw new Error("Не указаны параметры поиска");
+        if (!meatType || !adId) throw new Error("Не указаны параметры объявления!");
         const data = await getAdvertisementById(meatType, adId);
         setAd(data);
       }
       catch (err) {
         console.error(err);
         setError(err instanceof Error ? err.message : "Непредвиденная ошибка загрузки объявлений!");
-      }
-      finally {
-        setLoading(false);
       }
     };
     fetchAdvertisement();
@@ -66,14 +67,45 @@ export const Advertisement = () => {
       } 
       catch (error) {
         setError("Ошибка получения аватарки пользователя!");
-      } 
-      finally {
-        setLoading(false);
       }
     };
     if (ad) fetchFile();
   }, [ad]);
   
+
+  // Получаем изображения объявления
+  useEffect(() => {
+    const fetchAdPhoto = async () => {
+      try {
+        const filename = ad?.files;
+        const urls = [];
+        if (filename == undefined || filename.length === 0) {
+          const defaultPhoto = "default-adv-image.jpg";
+          const response = await fetch(`/api/download?filename=${defaultPhoto}`);
+          if (!response.ok) throw new Error("Ошибка получения фотографии объявления по умолчанию!");
+          const data = await response.json();
+          urls.push(data.data.url);
+        }
+        else {
+          for (let i = 0; i < filename.length; i++) {
+            const response = await fetch(`/api/download?filename=${filename[i].path}`);
+            if (!response.ok) throw new Error(`Ошибка получения ${i}-той фотографии объявления!`);
+            const data = await response.json();
+            urls.push(data.data.url);
+          }
+        }
+        setAdPhotoURLs(urls);
+      } 
+      catch (err) {
+        console.error(err);
+        setError(err instanceof Error ? err.message : "Непредвиденная ошибка загрузки объявлений!");
+      } 
+      finally {
+        setLoading(false);
+      }
+    };
+    if (ad) fetchAdPhoto();
+  }, [ad]);
 
 
   if (loading) {
@@ -92,27 +124,27 @@ export const Advertisement = () => {
     );
   }
 
-  // Нужно потом переделать номрально через запросы к minio через API роуты
-  const defaultUrlPath = "http://localhost:9000/meatway-bucket/";
 
   return (
     <>
       {/* <DevGridLg/> */}
 
       <div className="w-4/5 max-w-screen-lg mx-auto">
-        <div className="grid grid-cols-12 gap-x-4 mt-3">
+        <div className="grid grid-cols-12 gap-x-4 mt-2">
+
+          <div className="col-span-2 col-end-13"><ReturnButton text="На главную" size={25} onClick={() => router.back()}/></div>
         
           {/* Изображения объявления */}
           <div className="col-span-4 col-start-1 pl-1 pt-4">
-            {ad.files?.length != undefined && ad.files?.length > 1 ? (
+            {adPhotoURLs.length > 1 ? (
             // Слайдер для нескольких изображений
               <div className="pb-8">
                 <Slider {...settings}>
-                  {ad.files?.map((file, index) => (
+                  {adPhotoURLs.map((url, index) => (
                     <div key={`${ad.id}-${index}`} className="pr-1">
                       <div className="h-48 w-full border-2 border-gray-500 rounded-xl overflow-hidden aspect-square relative">
                         <Image
-                          src={defaultUrlPath + file.path}
+                          src={url}
                           alt={`Изображение ${index + 1} - ${ad.title}`}
                           fill
                           sizes="(max-width: 768px) 100vw, 50vw"
@@ -127,12 +159,12 @@ export const Advertisement = () => {
                   ))}
                 </Slider>
               </div>
-            ) : ad.files?.length === 1 ? (
+            ) : adPhotoURLs.length === 1 ? (
             // Одиночное изображение без слайдера
               <div className="pr-1 pb-4">
                 <div className="h-48 w-full border-2 border-gray-500 rounded-xl overflow-hidden aspect-square relative">
                   <Image
-                    src={defaultUrlPath + ad.files[0].path}
+                    src={adPhotoURLs[0]}
                     alt={`Единственное изображение - ${ad.title}`}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -149,7 +181,7 @@ export const Advertisement = () => {
               <div className="pr-1 pb-4">
                 <div className="h-48 w-full border-2 border-gray-500 rounded-xl overflow-hidden aspect-square relative">
                   <Image
-                    src={defaultUrlPath + "default-adv-image.jpg"}
+                    src={adPhotoURLs[0]}
                     alt="Изображение отсутствует"
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -167,12 +199,22 @@ export const Advertisement = () => {
 
           {/* Информация объявления */}
           <div className="col-span-5 col-start-5 mt-4">
+            {/* Общее */}
             <p className="text-xl">{ad.title}</p>
-            <p className="mt-1">{ad.weight || "Не указано"} кг</p>
+            <p className="mt-1">{ad.weight + " кг" || "Не указано"}</p>
             <p className="mt-1">{ad.location}</p>
+            <p className="mt-1">Количество: {ad.quantity + " шт"}</p>
             <p className="mt-1">Порода: {ad.breed || "не указано"}</p> {/* Порода */}
-            <p className="mt-1">Возраст: {ad.monthsAge || "не указано"}</p>
+            <p className="mt-1">Возраст: {ad.monthsAge + " месяца" || "не указано"}</p>
             <p className="mt-1">Медицинский сертификат: {ad.hasMedicalCertificate ? "есть" : "нет"}</p>
+            {/* Индивидуальные поля */}
+            {"feedingType" in ad ? (<p className="mt-1">Тип корма: {ad.feedingType}</p>) : <></>}
+            {"cuttingType" in ad ? (<p className="mt-1">Тип нарезки: {ad.cuttingType}</p>) : <></>}
+            {"birdType" in ad ? (<p className="mt-1">Тип птицы: {ad.birdType}</p>) : <></>}
+            {"fatContent" in ad ? (<p className="mt-1">Степень жирности: {ad.fatContent}</p>) : <></>}
+            {"processingType" in ad ? (<p className="mt-1">Обработка мяса: {ad.processingType}</p>) : <></>}
+            {"animalType" in ad ? (<p className="mt-1">Тип животного: {ad.animalType}</p>) : <></>}      
+            {/* Остальное */}
             <p className="mt-1">Описание:</p>
             <div className="border-2 rounded-xl border-gray-500 min-h-32">
               <p className="px-2 py-0.5">{ad.description}</p>

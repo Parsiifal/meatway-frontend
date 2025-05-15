@@ -5,9 +5,9 @@ import Image from "next/image";
 import "../MainPage.css";
 import { Avatar } from "@heroui/react";
 import { AdvertisementUnion } from "@/page/main/model/advertisementTypes";
-import { CircularProgress } from "@heroui/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { CustomSpinner } from "@/shared/ui/components/CustomSpinner";
 
 interface AdvertisementProps {
   advertisements: AdvertisementUnion[];
@@ -17,7 +17,7 @@ interface AdvertisementProps {
 export const Advertisement = ({ advertisements, error }: AdvertisementProps) => {
 
   const [avatars, setAvatars] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Настройки карусели изображений
   const settings = {
@@ -28,13 +28,6 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
     slidesToScroll: 1,
     arrows: false,
   };
-
-  useEffect(() => {
-    // Когда приходит проп advertisements — считаем загрузку завершённой
-    if (advertisements !== undefined) {
-      setIsLoading(false);
-    }
-  }, [advertisements]);
 
   // Получаем из minio аватарки владельцев объявлений
   useEffect(() => {
@@ -59,13 +52,12 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
           }));
         });
     });
+    setIsLoading(false);
   }, [advertisements, avatars]);
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <CircularProgress label="Загрузка объявлений..."/>
-      </div>
+      <><CustomSpinner mt={5}/></>
     );
   }
 
@@ -75,7 +67,6 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
         <p className="mt-4 text-2xl text-center text-gray-500">Пока нет ни одного объявления!</p>
       );
     }
-
     return (
       <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
         <p className="font-bold">Ошибка загрузки объявлений!</p>
@@ -92,7 +83,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
   console.log(avatars);
   console.log(advertisements);
 
-  // Нужно потом переделать номрально через запросы к minio через API роуты
+  // Нужно потом переделать нормально через запросы к minio через API роуты
   const defaultUrlPath = "http://localhost:9000/meatway-bucket/";
 
   return (
@@ -110,7 +101,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
                   <Slider {...settings}>
                     {ad.files?.map((file, index) => (
                       <div key={`${ad.id}-${index}`} className="pr-1">
-                        <div className="h-48 w-full bg-gray-800 border rounded-xl overflow-hidden aspect-square relative border-gray-500">
+                        <div className="h-48 w-full border-2 border-gray-500 rounded-xl overflow-hidden aspect-square relative">
                           <Image
                             src={defaultUrlPath + file.path}
                             alt={`Изображение ${index + 1} - ${ad.title}`}
@@ -130,7 +121,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
               ) : ad.files?.length === 1 ? (
               // Одиночное изображение без слайдера
                 <div className="pr-1 pb-4">
-                  <div className="h-48 w-full bg-gray-800 border rounded-xl overflow-hidden aspect-square relative border-gray-500">
+                  <div className="h-48 w-full border-2 border-gray-500 rounded-xl overflow-hidden aspect-square relative">
                     <Image
                       src={defaultUrlPath + ad.files[0].path}
                       alt={`Единственное изображение - ${ad.title}`}
@@ -147,7 +138,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
               ) : (
               // Дефолтная картинка если нет изображений
                 <div className="pr-1 pb-4">
-                  <div className="h-48 w-full bg-gray-200 border rounded-xl overflow-hidden aspect-square relative border-gray-500">
+                  <div className="h-48 w-full border-2 border-gray-500 rounded-xl overflow-hidden aspect-square relative">
                     <Image
                       src={defaultUrlPath + "default-adv-image.jpg"}
                       alt="Изображение отсутствует"
@@ -166,17 +157,16 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
 
 
             {/* Информация объявления */}
-            <div className="col-span-4 col-start-5 mt-4 border border-gray-500">
+            <div className="col-span-5 col-start-5 mt-4 mb-4 border border-gray-500">
               <Link href={`/advertisement/${ad.id}?meatType=${ad.meatType}`}
                 className="text-xl border border-gray-500">
                 {ad.title}
               </Link>
-              <p className="mt-1 border border-gray-500">{ad.meatType || "Не указано"} кг</p>
               <p className="mt-1 border border-gray-500">{ad.weight || "Не указано"} кг</p>
+              <p className="mt-1">Количество: {ad.quantity + " шт"}</p>
               <p className="mt-1 text-sm border border-gray-500">{ad.location}</p>
-              <p className="mt-1 text-sm border border-gray-500">Порода: {ad.breed || "не указано"}</p> {/* Порода */}
-              <p className="mt-1 text-sm border border-gray-500">Возраст: {ad.monthsAge || "не указано"}</p> {/* Возраст */}
-              <p className="mt-4 w-[120px] text-xl text-center bg-green-400 p-1 rounded-lg">{ad.price} р/кг</p>
+              <p className="mt-1 text-sm border border-gray-500">Возраст: {ad.monthsAge + " (месяцев)" || "не указано"}</p> {/* Возраст */}
+              <p className="mt-[18px] w-[120px] text-xl text-center bg-green-400 p-1 rounded-lg">{ad.price} р/кг</p>
             </div>
 
 

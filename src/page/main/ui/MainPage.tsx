@@ -17,24 +17,25 @@ export const MainPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Загрузить объявления конкретного типа (в том числе всех)
-  const fetchAds = async (type: string) => {
-    try {
-      setError(null); // Сбрасываем ошибки перед каждым новым запросом
-      const { data, error } = await getAdvertisements(type);
-
-      if (error) throw new Error(error);
-      if (data) setAds(data);
-    } 
-    catch (err) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : "Ошибка загрузки объявлений!");
-      setAds([]);
-    } 
-    finally {
-      console.log(selectedType);
-    }
-  };
-  useEffect(() => {fetchAds(selectedType);}, [selectedType]);
+  useEffect(() => {
+    const fetchAds = async (type: string) => {
+      try {
+        setError(null); // Сбрасываем ошибки перед каждым новым запросом
+        const { data, error } = await getAdvertisements(type);
+        if (error) throw new Error(error);
+        if (data) setAds(data);
+      } 
+      catch (err) {
+        console.error(err);
+        setError(err instanceof Error ? err.message : "Ошибка загрузки объявлений!");
+        setAds([]);
+      } 
+      finally {
+        console.log(selectedType);
+      }
+    };
+    fetchAds(selectedType);
+  }, [selectedType]);
 
   return (
     <div>
