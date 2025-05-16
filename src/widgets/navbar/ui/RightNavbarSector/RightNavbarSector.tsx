@@ -1,15 +1,13 @@
 "use client";
-import { MenuIcon } from "@/shared/ui";
-import { Button } from "@heroui/button";
+import { MenuIcon, PlusIcon } from "@/shared/ui";
+import { Button, NavbarContent, NavbarItem, User, Skeleton } from "@heroui/react";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
-import { NavbarContent, NavbarItem } from "@heroui/navbar";
-import { User } from "@heroui/user";
-import { Skeleton } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { isLoggedIn, logout } from "@/page/auth/api/actions";
 import Link from "next/link";
 import { getUserData } from "@/page/account/api/getUserData";
 import { UserDataType } from "@/page/account/model/types";
+import { useRouter } from "next/navigation";
 
 // Короч получить все данные пользователя и кинуть запрос на апи роут чтоб получить юрл картинки.
 export const RightNavbarSector = (() => {
@@ -17,6 +15,7 @@ export const RightNavbarSector = (() => {
   const [authStatus, setAuthStatus] = useState<"loading" | "authenticated" | "unauthenticated">("loading");
   const [userData, setUserData] = useState<UserDataType | null>(null);
   const [avatar, setAvatar] = useState();
+  const router = useRouter();
 
   // Проверить аутентификацию
   const checkAuth = async () => {
@@ -72,24 +71,32 @@ export const RightNavbarSector = (() => {
           <Skeleton className="h-8 w-28 rounded"/>
         </div>) :
         authStatus === "authenticated" ? 
-          (<Dropdown placement="bottom-start">
-            <DropdownTrigger>
-              <User
-                as="button"
-                avatarProps={{
-                  isBordered: true,
-                  src: avatar,
-                }}
-                className="transition-transform"
-                name={`${userData?.name || "Безымянный"} ${userData?.surname || ""}`}
-              />
-            </DropdownTrigger>
-            <DropdownMenu aria-label="User Actions" variant="flat" disabledKeys={["settings"]}>
-              <DropdownItem key="account" href="/account">Мой аккаунт</DropdownItem>
-              <DropdownItem key="settings">Настройки аккаунта</DropdownItem>
-              <DropdownItem key="logout" color="danger" onPress={onPressLogout}>Выйти</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>) :
+          (<>
+            <Button onPress={() => router.push("/create-ad")} 
+              startContent={<PlusIcon size={30} fill={"#2d5be2"}/>} variant="bordered" color="primary"
+              className="max-xl:hidden leading-none hover:!bg-transparent">
+              Создать <br></br>
+              объявление
+            </Button>
+            <Dropdown placement="bottom-start">
+              <DropdownTrigger>
+                <User
+                  as="button"
+                  avatarProps={{
+                    isBordered: true,
+                    src: avatar,
+                  }}
+                  className="transition-transform"
+                  name={`${userData?.name || "Безымянный"} ${userData?.surname || ""}`}
+                />
+              </DropdownTrigger>
+              <DropdownMenu aria-label="User Actions" variant="flat" disabledKeys={["settings"]}>
+                <DropdownItem key="account" href="/account">Мой аккаунт</DropdownItem>
+                <DropdownItem key="settings">Настройки аккаунта</DropdownItem>
+                <DropdownItem key="logout" color="danger" onPress={onPressLogout}>Выйти</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </>) :
           (<>
             <NavbarItem className="hidden lg:flex">
               <Link href="/auth/login" className="font-semibold hover:text-blue-600">Вход</Link>
@@ -107,6 +114,7 @@ export const RightNavbarSector = (() => {
         <DropdownMenu aria-label="Link Actions" disabledKeys={["analytics", "settings", "help"]}>
           <DropdownItem key="home" href="/">DevPage</DropdownItem>
           <DropdownItem key="main" href="/main">Главная</DropdownItem>
+          <DropdownItem key="create-ad" href="/create-ad">Создать объявление</DropdownItem>
           <DropdownItem key="analytics" href="/">Аналитика</DropdownItem>
           <DropdownItem key="settings" href="/">Настройки</DropdownItem>
           <DropdownItem key="help" href="/">Помощь</DropdownItem>

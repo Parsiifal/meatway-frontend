@@ -1,6 +1,6 @@
 import { UserDataType } from "@/page/account/model/types";
 
-type FilePath = {
+export type FilePath = {
   path: string
 }
 
@@ -10,13 +10,13 @@ export type AdvertisementType = {
   title: string;
   description: string;
   price: number;
-  hasMedicalCertificate: true;
+  hasMedicalCertificate: boolean;
   weight: number;
   location: string;
   isFrozen: boolean;
   isRetail: boolean;
   quantity: number;
-  sellerUser: UserDataType;
+  sellerUser?: UserDataType;
   breed?: string;
   monthsAge?: number;
   files?: FilePath[];

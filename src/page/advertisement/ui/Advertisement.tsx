@@ -57,7 +57,7 @@ export const Advertisement = () => {
   useEffect(() => {
     const fetchFile = async () => {
       try {
-        const filename = ad?.sellerUser.photo?.path || "Default avatar.jpg";
+        const filename = ad?.sellerUser?.photo?.path || "Default avatar.jpg";
         const response = await fetch(`/api/download?filename=${filename}`);
         if (!response.ok) {
           setError("Ошибка получения аватарки пользователя!");
@@ -232,7 +232,7 @@ export const Advertisement = () => {
                   1. Изменение/ограничение размеров компонента или картинки не стандартными либовскими средствами, что ломает рендер.
                   2. Сами изображения шакальные и некорректно рендерятся. */}
               <Avatar isBordered size="lg" src={avatarURL}/>
-              <p className="text-md whitespace-nowrap">{`${ad.sellerUser.name || "Безымянный"} ${ad.sellerUser.surname || ""}`}</p>
+              <p className="text-md whitespace-nowrap">{`${ad.sellerUser?.name || "Безымянный"} ${ad.sellerUser?.surname || ""}`}</p>
             </div>
 
             <div className="col-span-2 text-center mt-5">

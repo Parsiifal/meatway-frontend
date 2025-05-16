@@ -33,7 +33,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
   useEffect(() => {
     advertisements.forEach((ad) => {
       if (!ad.id || avatars[ad.id]) return;
-      const avatar = ad.sellerUser.photo?.path ?? "Default avatar.jpg";
+      const avatar = ad.sellerUser?.photo?.path ?? "Default avatar.jpg";
       
       fetch(`/api/download?filename=${avatar}`)
         .then((res) => 
@@ -80,8 +80,8 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
     );
   } 
 
-  console.log(avatars);
-  console.log(advertisements);
+  //console.log(avatars);
+  //console.log(advertisements);
 
   // Нужно потом переделать нормально через запросы к minio через API роуты
   const defaultUrlPath = "http://localhost:9000/meatway-bucket/";
@@ -165,7 +165,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
               <p className="mt-1 border border-gray-500">{ad.weight || "Не указано"} кг</p>
               <p className="mt-1">Количество: {ad.quantity + " шт"}</p>
               <p className="mt-1 text-sm border border-gray-500">{ad.location}</p>
-              <p className="mt-1 text-sm border border-gray-500">Возраст: {ad.monthsAge + " (месяцев)" || "не указано"}</p> {/* Возраст */}
+              <p className="mt-1 text-sm border border-gray-500">Возраст: {ad.monthsAge ? ad.monthsAge + " (месяцев)" : "не указано"}</p> {/* Возраст */}
               <p className="mt-[18px] w-[120px] text-xl text-center bg-green-400 p-1 rounded-lg">{ad.price} р/кг</p>
             </div>
 
@@ -179,7 +179,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
                   1. Изменение/ограничение размеров компонента или картинки не стандартными либовскими средствами, что ломает рендер.
                   2. Сами изображения шакальные и некорректно рендерятся. */}
                 <Avatar isBordered size="lg" src={avatars[ad.id!]}/>
-                <p className="text-md whitespace-nowrap">{`${ad.sellerUser.name || "Безымянный"} ${ad.sellerUser.surname || ""}`}</p>
+                <p className="text-md whitespace-nowrap">{`${ad.sellerUser?.name || "Безымянный"} ${ad.sellerUser?.surname || ""}`}</p>
               </div>
 
               <div className="col-span-2 text-center mt-5 border border-red-500">

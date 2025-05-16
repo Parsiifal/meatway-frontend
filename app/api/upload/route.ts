@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import minioClient from "@/shared/minio/minioClient";
 
 
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
       files.map(async (file) => {
 
         const buffer = Buffer.from(await file.arrayBuffer());
-        const fileName = `user-avatar-${Date.now()}.jpg`;
+        const fileName = `user-avatar-${randomUUID()}.jpg`;
 
         await minioClient.putObject(
           process.env.MINIO_BUCKET_NAME!,

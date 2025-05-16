@@ -1,4 +1,4 @@
-export const BackIcon = ({ size = 40, ...props }: { size?: number}) => (
+export const BackIcon = ({ size = 40, ...props }) => (
   <svg
     width={size}
     height={size}

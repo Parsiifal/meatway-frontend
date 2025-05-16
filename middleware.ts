@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decodeJwt } from "jose";
 
-const protectedRoutes = ["/main", "/account"];
+const protectedRoutes = ["/main", "/account", "/advertisement", "/create-ad"];
 
 export default async function middleware(req: NextRequest) {
   
@@ -31,10 +31,18 @@ export default async function middleware(req: NextRequest) {
 
 // Проверяем токен на протухание
 async function isTokenOutdated(req: NextRequest, token: string) {
-  const payload = decodeJwt(token);
-  if (payload.exp && Date.now() > payload.exp * 1000) {
-    // токен протух
-    return NextResponse.redirect(new URL("/auth/login", req.nextUrl));
+  try {
+    const payload = decodeJwt(token);
+    if (payload.exp && Date.now() > payload.exp * 1000) { // токен протух
+      const res = NextResponse.redirect(new URL("/auth/login", req.nextUrl));
+      res.cookies.delete("token");
+      return res;
+    }
+    return undefined;
   }
-  return undefined;
+  catch (error) { // Если возникла какия-то ошибка
+    const res = NextResponse.redirect(new URL("/auth/login", req.nextUrl));
+    res.cookies.delete("token");
+    return res;
+  }
 }

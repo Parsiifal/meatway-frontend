@@ -181,7 +181,6 @@ export const AccountComponent = () => {
           <input
             id="fileInput"
             type="file"
-            multiple
             className="hidden"
             ref={fileInputRef}
             onChange={handleUpload}
