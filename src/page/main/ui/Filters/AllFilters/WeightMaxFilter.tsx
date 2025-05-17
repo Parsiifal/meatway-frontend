@@ -36,7 +36,7 @@ export const WeightMaxFilter = ({ value, onChange, minValue }: WeightMaxFilterPr
   }
 
   return (
-    <div className="col-span-2 col-start-7 border border-green-600">
+    <div className="col-span-2 col-start-7">
       <NumberInput ref={inputRef} isClearable hideStepper isWheelDisabled radius="lg" size={"sm"}
         errorMessage={
           errors.length > 0 ? (

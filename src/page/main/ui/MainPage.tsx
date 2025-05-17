@@ -1,5 +1,4 @@
 "use client";
-import { GridDev } from "./Grid/GridDev";
 import "./MainPage.css";
 import { TopContent } from "./TopContent/TopContent";
 import { ButtonsMeatType } from "./ButtonsMeatType/ButtonsMeatType";
@@ -8,6 +7,7 @@ import { Advertisement } from "./Advertisements/Advertisement";
 import { AdvertisementUnion } from "@/page/main/model/advertisementTypes";
 import { useState, useEffect } from "react";
 import { getAdvertisements } from "../api/getAdvertisements";
+//import { GridDev } from "./Grid/GridDev";
 
 
 export const MainPage = () => {
@@ -39,7 +39,7 @@ export const MainPage = () => {
 
   return (
     <div>
-      <GridDev/>
+      {/* <GridDev/> */}
 
       <div className="w-4/5 max-w-screen-lg mx-auto">
         {/* Верхняя надпись и местоположение */}
@@ -50,7 +50,7 @@ export const MainPage = () => {
         <Filters/>
       </div>
       
-      <div className="mt-6 bg-gray-200 min-h-[70vh] border border-orange-500">
+      <div className="mt-6 bg-gray-200 min-h-[70vh] border-t-2 border-gray-500">
         <div className="w-4/5 max-w-screen-lg mx-auto">
           {/* Объявления */}
           <Advertisement advertisements={ads} error={error || undefined}/>

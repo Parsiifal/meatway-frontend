@@ -44,7 +44,7 @@ export const LoginPage = () => {
         }
       } 
       catch (error) {
-        setErrors({ general: "Неизвестная ошибкааааа" });
+        setErrors({ general: "Ошибка входа!" });
       } 
       finally {
         setLoading(false);

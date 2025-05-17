@@ -205,7 +205,7 @@ export const Advertisement = () => {
             <p className="mt-1">{ad.location}</p>
             <p className="mt-1">Количество: {ad.quantity + " шт"}</p>
             <p className="mt-1">Порода: {ad.breed || "не указано"}</p> {/* Порода */}
-            <p className="mt-1">Возраст: {ad.monthsAge + " месяца" || "не указано"}</p>
+            <p className="mt-1">Возраст: {ad.monthsAge ? ad.monthsAge + " месяца" : "не указано"}</p>
             <p className="mt-1">Медицинский сертификат: {ad.hasMedicalCertificate ? "есть" : "нет"}</p>
             {/* Индивидуальные поля */}
             {"feedingType" in ad ? (<p className="mt-1">Тип корма: {ad.feedingType}</p>) : <></>}

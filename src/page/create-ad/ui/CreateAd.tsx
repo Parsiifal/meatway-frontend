@@ -4,8 +4,9 @@ import { FilePath } from "@/page/main/model/advertisementTypes";
 import { useRef, useState } from "react";
 import { addToast, Button, Checkbox, Form, Input, Select, SelectItem, Textarea, type SharedSelection } from "@heroui/react";
 import { ReturnButton } from "@/shared/ui/components/ReturnButton";
-import { DevGridLg } from "@/shared/dev/DevGridLg";
 import { createAd } from "../api/createAd";
+import { UploadResponse } from "@/page/account/model/types";
+//import { DevGridLg } from "@/shared/dev/DevGridLg";
 
 export const CreateAd = () => {
 
@@ -47,11 +48,7 @@ export const CreateAd = () => {
       else if (meatType === "sheepmeat" || meatType === "specialmeat") parsedData = { ...baseData, ...sheepAndSpecialData };
       else parsedData = baseData;
 
-      // Собираем только имена файлов в FilePath[]
-      const filePaths: FilePath[] = selectedFiles.map(file => ({ path: file.name, }));
-      // Включаем files в данные
-      parsedData = { ...parsedData, files: filePaths };
-
+      let uploadedFileNames: string[] = [];
       // Загружаем файлы в Minio, если они есть
       if (selectedFiles.length > 0) {
         const filesData = new FormData();
@@ -62,14 +59,34 @@ export const CreateAd = () => {
           body: filesData,
         });
         if (!response.ok) throw new Error("Ошибка загрузки файлов в хранилище!");
+
+        const result: UploadResponse = await response.json();
+
+        if (result.status === "success" && result.data) {
+          uploadedFileNames = result.data.map(file => file.fileName);
+
+        } 
+        else {
+          throw new Error("Не удалось загрузить фото объявления!");
+        }
+
+
+
+
       }
+
+      // Собираем только имена файлов в FilePath[]
+      const filePaths: FilePath[] = uploadedFileNames.map(name => ({ path: name, }));
+      // Включаем files в данные
+      parsedData = { ...parsedData, files: filePaths };
   
       //console.log(Object.getPrototypeOf(parsedData) === Object.prototype);
-      //console.warn(json);
+      
       //const ad = JSON.parse(json) as AdvertisementUnion;
       //console.warn(ad);
 
       const json = JSON.stringify(parsedData);
+      console.warn(json);
       const success = await createAd(json, meatType);
       if (success) {
         addToast({ title: "Объявление создано", color: "primary", variant: "solid", timeout: 3500, 
@@ -102,14 +119,14 @@ export const CreateAd = () => {
 
   return (
     <>
-      <DevGridLg/>
+      {/* <DevGridLg/> */}
 
       <div className="w-4/5 max-w-screen-lg mx-auto">
         <div className="grid grid-cols-12 gap-x-4 grid-flow-row-dense mt-2 mb-20">
 
-          <div className="col-span-2 col-end-13 border border-gray-500"><ReturnButton text="На главную" size={25} onClick={() => router.back()}/></div>
+          <div className="col-span-2 col-end-13"><ReturnButton text="На главную" size={25} onClick={() => router.back()}/></div>
 
-          <div className="col-span-6 col-start-4 border border-gray-500">
+          <div className="col-span-6 col-start-4">
             <Form onSubmit={handleSubmit}>
               {error && (<p className="text-lg text-red-500 mx-auto">{error}</p>)}
               <p className="font-semibold text-lg">Заполните объявление</p>
@@ -199,11 +216,11 @@ export const CreateAd = () => {
                 className="hidden"
                 onChange={handleFileChange}
               />
-              <button
+              <Button
                 onClick={() => fileInputRef.current?.click()}
                 className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg">
                 Выбрать фото
-              </button>
+              </Button>
               {/* Список выбранных файлов */}
               {selectedFiles.length > 0 && (
                 <div className="border p-2">

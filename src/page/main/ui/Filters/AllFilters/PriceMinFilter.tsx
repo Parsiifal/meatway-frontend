@@ -37,7 +37,7 @@ export const PriceMinFilter = ({ value, onChange, maxValue }: PriceMinFilterProp
   }
 
   return (
-    <div className="col-span-2 col-start-1 border border-green-600">
+    <div className="col-span-2 col-start-1">
       <NumberInput ref={inputRef} isClearable hideStepper isWheelDisabled radius="lg" size={"sm"}
         errorMessage={
           errors.length > 0 ? (

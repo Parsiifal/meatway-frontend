@@ -8,6 +8,7 @@ import { AdvertisementUnion } from "@/page/main/model/advertisementTypes";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CustomSpinner } from "@/shared/ui/components/CustomSpinner";
+import { useMemo } from "react";
 
 interface AdvertisementProps {
   advertisements: AdvertisementUnion[];
@@ -55,6 +56,18 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
     setIsLoading(false);
   }, [advertisements, avatars]);
 
+  // Перемешивание объявлений в случайном порядке
+  const shuffledAds = useMemo(() => {
+    const arr = [...advertisements]; // создаём копию
+    // Алгоритм Фишера–Йетса
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, [advertisements]);
+  
+
   if (isLoading) {
     return (
       <><CustomSpinner mt={5}/></>
@@ -88,13 +101,13 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
 
   return (
     <>
-      {advertisements.map((ad) => (
-        <div key={ad.id} className="mt-4 bg-white rounded-2xl border border-cyan-500">
+      {shuffledAds.map((ad) => (
+        <div key={ad.id} className="mt-4 bg-white rounded-2xl border-2 border-gray-500">
           
           <div className="gridLg">
             
             {/* Изображения объявления */}
-            <div className="col-span-4 col-start-1 pl-1 pt-4 border border-purple-500">
+            <div className="col-span-4 col-start-1 pl-1 pt-4">
               {ad.files?.length != undefined && ad.files?.length > 1 ? (
               // Слайдер для нескольких изображений
                 <div className="pb-8">
@@ -157,21 +170,21 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
 
 
             {/* Информация объявления */}
-            <div className="col-span-5 col-start-5 mt-4 mb-4 border border-gray-500">
+            <div className="col-span-5 col-start-5 mt-4 mb-4">
               <Link href={`/advertisement/${ad.id}?meatType=${ad.meatType}`}
-                className="text-xl border border-gray-500">
+                className="text-xl">
                 {ad.title}
               </Link>
-              <p className="mt-1 border border-gray-500">{ad.weight || "Не указано"} кг</p>
+              <p className="mt-1">{ad.weight || "Не указано"} кг</p>
               <p className="mt-1">Количество: {ad.quantity + " шт"}</p>
-              <p className="mt-1 text-sm border border-gray-500">{ad.location}</p>
-              <p className="mt-1 text-sm border border-gray-500">Возраст: {ad.monthsAge ? ad.monthsAge + " (месяцев)" : "не указано"}</p> {/* Возраст */}
+              <p className="mt-1 text-sm">{ad.location}</p>
+              <p className="mt-1 text-sm">Возраст: {ad.monthsAge ? ad.monthsAge + " (месяцев)" : "не указано"}</p> {/* Возраст */}
               <p className="mt-[18px] w-[120px] text-xl text-center bg-green-400 p-1 rounded-lg">{ad.price} р/кг</p>
             </div>
 
 
             {/* Владелец объявления и доп. информация */}
-            <div className="col-start-10 col-end-13 grid grid-cols-subgrid gap-x-4 content-start mt-4 border border-gray-500">
+            <div className="col-start-10 col-end-13 grid grid-cols-subgrid gap-x-4 content-start mt-4">
               <div className="col-span-3 flex flex-row items-center gap-x-3 p-1">            
                 {/* По какой то причине некоторые картинки могут отображатся в аватарах с плохим качеством.
                   Я потратил много времени, чтоб понять почему так, но результатов это не дало. И дело не в либе,
@@ -182,7 +195,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
                 <p className="text-md whitespace-nowrap">{`${ad.sellerUser?.name || "Безымянный"} ${ad.sellerUser?.surname || ""}`}</p>
               </div>
 
-              <div className="col-span-2 text-center mt-5 border border-red-500">
+              <div className="col-span-2 text-center mt-5">
                 {/* Халяль */}
                 {"isHalal" in ad ? ad.isHalal ? (<p className="bg-green-400 p-1 rounded-xl">Халяль</p>) : 
                   (<p className="bg-red-400 text-white p-1 rounded-xl">Халяль</p>) : <></>

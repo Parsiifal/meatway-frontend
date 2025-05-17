@@ -84,7 +84,7 @@ export const RegistrationPage = () => {
 
       } 
       catch (error) {
-        setErrors({ general: "Сетевая ошибка" });
+        setErrors({ general: "Ошибка входа!" });
       } 
       finally {
         setLoading(false);

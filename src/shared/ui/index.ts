@@ -11,3 +11,8 @@ export { EyeFilledIcon } from "./icons/EyeFilledIcon";
 export { EyeSlashFilledIcon } from "./icons/EyeSlashFilledIcon";
 export { BackIcon } from "./icons/BackIcon";
 export { PlusIcon } from "./icons/PlusIcon";
+export { MeatIcon } from "./icons/MeatIcon";
+export { BeefIcon } from "./icons/BeefIcon";
+export { BirdIcon } from "./icons/BirdIcon";
+export { PorkIcon } from "./icons/PorkIcon";
+export { SheepmeatIcon } from "./icons/SheepmeatIcon";

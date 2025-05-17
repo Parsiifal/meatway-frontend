@@ -14,7 +14,7 @@ export const Filters = () => {
   const [maxWeight, setMaxWeight] = useState<number | undefined>(undefined);
 
   return (
-    <div className="gridLg mt-6 border border-yellow-400">
+    <div className="gridLg mt-6">
       <p className="col-span-2 mb-2 text-md">Цена за кг</p>
       <p className="col-span-2 col-start-5 mb-2 text-md">Вес туши</p>
 

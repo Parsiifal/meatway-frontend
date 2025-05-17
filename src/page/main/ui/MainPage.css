@@ -3,5 +3,5 @@
 }
 
 .btnMeatType {
-  @apply col-span-2 flex flex-row items-center justify-center h-full gap-x-1 bg-gray-400/30 border rounded-2xl border-red-400
+  @apply col-span-2 flex flex-row items-center justify-center h-full gap-x-1 bg-gray-400/30 rounded-2xl border-2 border-gray-500
 }
