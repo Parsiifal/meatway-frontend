@@ -8,7 +8,7 @@ export const getAdvertisementById = async (meatType: string, adId: string): Prom
     if (meatType == "undefined" || !adId) throw new Error("Невалидные параметры запроса!");
     const token = await getUserToken();
 
-    const response = await fetch(`${process.env.SERVER_URL}/api/v1/ads/${meatType + "s"}/${adId}`, {
+    const response = await fetch(`http://meatway-api:8080/api/v1/ads/${meatType + "s"}/${adId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

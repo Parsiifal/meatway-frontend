@@ -8,7 +8,7 @@ export const createAd = async (adJson: string, meatType: string): Promise<boolea
     const token = await getUserToken();
     const ad = JSON.parse(adJson) as AdvertisementUnion;
 
-    const response = await fetch(`http://localhost:8080/api/v1/ads/${meatType}s`, {
+    const response = await fetch(`http://meatway-api:8080/api/v1/ads/${meatType}s`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

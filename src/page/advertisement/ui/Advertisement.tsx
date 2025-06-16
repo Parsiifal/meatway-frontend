@@ -153,6 +153,7 @@ export const Advertisement = () => {
                           style={{
                             borderRadius: "0.5rem"
                           }}
+                          unoptimized={true} // Важное исправление!
                         />
                       </div>
                     </div>
@@ -173,6 +174,7 @@ export const Advertisement = () => {
                     style={{
                       borderRadius: "0.5rem"
                     }}
+                    unoptimized={true} // Важное исправление!
                   />
                 </div>
               </div>
@@ -190,6 +192,7 @@ export const Advertisement = () => {
                     style={{
                       borderRadius: "0.5rem"
                     }}
+                    unoptimized={true} // Важное исправление!
                   />
                 </div>
               </div>

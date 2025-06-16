@@ -14,7 +14,7 @@ export async function isLoggedIn() {
 export async function login(email: string, password: string ): Promise<Partial<LoginFormData & { general: string }> | null> {
   try {
     // Делаем запрос
-    const response = await fetch("http://localhost:8080/api/v1/auth/login", {
+    const response = await fetch("http://meatway-api:8080/api/v1/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

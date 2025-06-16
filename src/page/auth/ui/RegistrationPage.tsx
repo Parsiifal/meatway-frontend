@@ -43,7 +43,7 @@ export const RegistrationPage = () => {
 
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:8080/api/v1/register", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/register`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -102,6 +102,7 @@ export const RegistrationPage = () => {
 
           <div className="col-span-2 col-start-4 text-left">
             <Link href="/" className="text-sm hover:text-blue-500">Отменить</Link>
+            <p>{process.env.NEXT_PUBLIC_SERVER_URL}</p>
           </div>
 
           <h1 className="col-span-6 col-start-4 mt-5 text-3xl text-center font-semibold">Регистрация профиля</h1>

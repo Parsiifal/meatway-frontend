@@ -22,7 +22,7 @@ export const getAdvertisements = async (meatType: string): Promise<Advertisement
 
     const token = await getUserToken();
       
-    const response = await fetch(`${process.env.SERVER_URL}${endpoint}`, {
+    const response = await fetch(`http://meatway-api:8080${endpoint}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

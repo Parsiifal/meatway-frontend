@@ -99,6 +99,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
   // Нужно потом переделать нормально через запросы к minio через API роуты
   const defaultUrlPath = "http://localhost:9000/meatway-bucket/";
 
+
   return (
     <>
       {shuffledAds.map((ad) => (
@@ -115,6 +116,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
                     {ad.files?.map((file, index) => (
                       <div key={`${ad.id}-${index}`} className="pr-1">
                         <div className="h-48 w-full border-2 border-gray-500 rounded-xl overflow-hidden aspect-square relative">
+                          {/* src={defaultUrlPath + file.path} */}
                           <Image
                             src={defaultUrlPath + file.path}
                             alt={`Изображение ${index + 1} - ${ad.title}`}
@@ -125,6 +127,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
                             style={{
                               borderRadius: "0.5rem"
                             }}
+                            unoptimized={true} // Важное исправление!
                           />
                         </div>
                       </div>
@@ -135,6 +138,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
               // Одиночное изображение без слайдера
                 <div className="pr-1 pb-4">
                   <div className="h-48 w-full border-2 border-gray-500 rounded-xl overflow-hidden aspect-square relative">
+                    {/* src={defaultUrlPath + ad.files[0].path} */}
                     <Image
                       src={defaultUrlPath + ad.files[0].path}
                       alt={`Единственное изображение - ${ad.title}`}
@@ -145,6 +149,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
                       style={{
                         borderRadius: "0.5rem"
                       }}
+                      unoptimized={true}
                     />
                   </div>
                 </div>
@@ -152,6 +157,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
               // Дефолтная картинка если нет изображений
                 <div className="pr-1 pb-4">
                   <div className="h-48 w-full border-2 border-gray-500 rounded-xl overflow-hidden aspect-square relative">
+                    {/* src={defaultUrlPath + "default-adv-image.jpg"} */}
                     <Image
                       src={defaultUrlPath + "default-adv-image.jpg"}
                       alt="Изображение отсутствует"
@@ -162,6 +168,7 @@ export const Advertisement = ({ advertisements, error }: AdvertisementProps) => 
                       style={{
                         borderRadius: "0.5rem"
                       }}
+                      unoptimized={true}
                     />
                   </div>
                 </div>

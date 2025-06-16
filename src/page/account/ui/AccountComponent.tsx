@@ -46,10 +46,12 @@ export const AccountComponent = () => {
         }
 
         const data = await response.json();
+        console.log(data);
         setFileData(data.data);
       } 
       catch (error) {
-        setError("Ошибка получения аватарки пользователя!");
+        console.log(error);
+        setError("хз!");
       } 
       finally {
         setLoading(false);
@@ -154,7 +156,7 @@ export const AccountComponent = () => {
     );
   }
 
-  if (!fileData || !userData) {return null;}
+  if (!fileData || !userData) {return <p>Тут ничего нет</p>;}
 
   return (
     <div className="grid grid-cols-12 gap-x-4 mt-8">
@@ -173,6 +175,7 @@ export const AccountComponent = () => {
             style={{
               borderRadius: "0.5rem"
             }}
+            unoptimized={true}
           />
         </div>
 

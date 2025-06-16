@@ -9,7 +9,7 @@ export const updateUserData = async (updateUserData: UpdateUserDataType): Promis
   
   if (!token) throw new Error("Токен авторизации не найден");
 
-  const response = await fetch(`${process.env.SERVER_URL}/api/v1/users`, {
+  const response = await fetch("http://meatway-api:8080/api/v1/users", {
     method: "PATCH",
     headers: {
       "Accept": "application/json",

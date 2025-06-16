@@ -1,23 +1,34 @@
 # Используем официальный образ Node.js
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
-# Рабочая директория
+# Рабочая директория внутри контейнера
 WORKDIR /app
 
-# Копируем зависимости
+# Копируем package.json и package-lock.json (или yarn.lock)
 COPY package*.json ./
 
 # Устанавливаем зависимости
 RUN npm install
 
-# Копируем исходный код
+# Копируем все файлы проекта
 COPY . .
 
 # Собираем приложение
 RUN npm run build
 
-# Экспортируем порт (по умолчанию Next.js использует 3000)
+# Production образ
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Копируем только необходимые файлы из builder стадии
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
+# Указываем порт, который будет использоваться приложением
 EXPOSE 3000
 
-# Запускаем приложение
+# Команда для запуска приложения
 CMD ["npm", "start"]
